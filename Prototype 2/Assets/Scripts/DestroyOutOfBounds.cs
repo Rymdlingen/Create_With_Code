@@ -16,12 +16,16 @@ public class DestroyOutOfBounds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Destrys an object if it is outside of the players view.
         if (transform.position.z > topBound)
         {
+            // Destroys the food.
             Destroy(gameObject);
         }
         else if (transform.position.z < lowerBound)
         {
+            // Outputs a Game Over to the log and destroys animals.
+            Debug.Log("GameOver!");
             Destroy(gameObject);
         }
     }
