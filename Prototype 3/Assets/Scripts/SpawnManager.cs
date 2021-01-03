@@ -5,13 +5,18 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public GameObject obstaclePrefab;
-    private Vector3 spawnPosition = new Vector3(28, 0, 0);
+    private Vector3 spawnPosition = new Vector3(32, 0, 0);
     private float startDelay = 2;
     private float repeatRate = 2;
+    private PlayerController playerControllerScript;
 
     // Start is called before the first frame update
     void Start()
     {
+        // For communication with the player controller script, used to check if the gam is over.
+        playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
+
+        // Starts to repeat spawning obstacles.
         InvokeRepeating("SpawnObstacle", startDelay, repeatRate);
     }
 
@@ -21,8 +26,12 @@ public class SpawnManager : MonoBehaviour
 
     }
 
+    // Method for spawning obstacles as long as the game is not over.
     void SpawnObstacle()
     {
-        Instantiate(obstaclePrefab, spawnPosition, obstaclePrefab.transform.rotation);
+        if (playerControllerScript.gameOver == false)
+        {
+            Instantiate(obstaclePrefab, spawnPosition, obstaclePrefab.transform.rotation);
+        }
     }
 }
