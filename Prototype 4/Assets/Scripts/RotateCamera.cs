@@ -15,6 +15,7 @@ public class RotateCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // The player can rotate the camera around the center with left and right arrows.
         float horizontalInput = Input.GetAxis("Horizontal");
         transform.Rotate(Vector3.up, rotationSpeed * horizontalInput * Time.deltaTime);
     }

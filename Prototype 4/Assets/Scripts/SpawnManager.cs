@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Spawns an enemy.
         Instantiate(enemyPrefab, GenerateSpawnPosition(), enemyPrefab.transform.rotation);
     }
 
@@ -19,6 +20,7 @@ public class SpawnManager : MonoBehaviour
 
     }
 
+    // Generate a random position for an enemy.
     private Vector3 GenerateSpawnPosition()
     {
         float spawnPositionX = Random.Range(-spawnRange, spawnRange);
