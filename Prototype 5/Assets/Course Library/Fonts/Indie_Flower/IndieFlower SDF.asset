@@ -1819,7 +1819,7 @@ MonoBehaviour:
   m_AtlasWidth: 512
   m_AtlasHeight: 512
   m_AtlasPadding: 5
-  m_AtlasRenderMode: 16422
+  m_AtlasRenderMode: 16426
   m_glyphInfoList:
   - id: 32
     x: 6
