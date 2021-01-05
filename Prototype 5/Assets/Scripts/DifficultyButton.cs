@@ -25,6 +25,7 @@ public class DifficultyButton : MonoBehaviour
 
     }
 
+    // When a difficulty button is pressed the game starts with the difficulty adjusted.
     void SetDifficulty()
     {
         Debug.Log(gameObject.name + " was clicked");

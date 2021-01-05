@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // Spawns a new target on a timer.
     IEnumerator SpawnTarget()
     {
         while (isGameActive)
@@ -40,12 +41,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Displays a new score.
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
         scoreText.text = "Score: " + score;
     }
 
+    // Displays the game over UI and stops the objects from spawning and being clickable.
     public void GameOver()
     {
         restartButton.gameObject.SetActive(true);
@@ -53,6 +56,7 @@ public class GameManager : MonoBehaviour
         isGameActive = false;
     }
 
+    // Removes the title screen, sets the spawn rate, starts spawning of objects and keeping track of the score.
     public void StartGame(int difficulty)
     {
         isGameActive = true;
@@ -65,6 +69,7 @@ public class GameManager : MonoBehaviour
         titleScreen.gameObject.SetActive(false);
     }
 
+    // Reloads the game.
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
