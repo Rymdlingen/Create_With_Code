@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     void RotatePlayer()
     {
         // TODO need to be more precise.
+        // 8/1 Added drag, seems to work!
 
         // Get the value of the players input on the rotation, from lefta and right arrows.
         rotationInput = Input.GetAxis("Horizontal");
@@ -69,7 +70,7 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y - 1, -2);
         }
 
-        // Lower boundy.
+        // Lower boundry.
         if (playersPositionOnScreen.y < 0)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y + 3, -2);
@@ -87,6 +88,25 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(transform.position.x + 1, transform.position.y, -2);
         }
 
-        Debug.Log(playersPositionOnScreen);
+        //Debug.Log(playersPositionOnScreen);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            Debug.Log("Trigger: " + collision.gameObject.tag);
+        }
+
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            Debug.Log("Trigger: " + collision.gameObject.tag);
+        }
+
+        if (collision.gameObject.CompareTag("Powerup"))
+        {
+            Destroy(collision.gameObject);
+            Debug.Log("Trigger: " + collision.gameObject.tag);
+        }
     }
 }
