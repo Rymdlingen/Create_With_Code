@@ -32,10 +32,10 @@ public class PlayerController : MonoBehaviour
     // Rotate player around z axis.
     void RotatePlayer()
     {
-        // TODO need to be more precise.
+        // TODO need to be more precise and need to start reseting I think, check how it works in lunar lander.
         // 8/1 Added drag, seems to work!
 
-        // Get the value of the players input on the rotation, from lefta and right arrows.
+        // Get the value of the players input on the rotation, from left and right arrows.
         rotationInput = Input.GetAxis("Horizontal");
 
         // Add torque.
@@ -93,20 +93,39 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // If the player collides with the ground they lose and get destroyed.
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("Trigger: " + collision.gameObject.tag);
+            Destroy(gameObject);
         }
 
         if (collision.gameObject.CompareTag("Platform"))
         {
             Debug.Log("Trigger: " + collision.gameObject.tag);
-        }
 
-        if (collision.gameObject.CompareTag("Powerup"))
+            // If the player is not paralell with the platform when landing, the player lose.
+            // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
+            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1)
+            {
+                Destroy(gameObject);
+                Debug.Log("Loser");
+            }
+            else
+            {
+                Debug.Log("WIN!");
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // If the player collides with a powerup the powerup is destroyed.
+        if (other.gameObject.CompareTag("Powerup"))
         {
-            Destroy(collision.gameObject);
-            Debug.Log("Trigger: " + collision.gameObject.tag);
+            Destroy(other.gameObject);
+            Debug.Log("Trigger: " + other.gameObject.tag);
+            Destroy(other.transform);
         }
     }
 }
