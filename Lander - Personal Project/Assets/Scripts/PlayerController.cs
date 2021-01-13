@@ -5,7 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // Public variables.
-    public float speed = 10.0f;
+    public float speed;
+    public bool gameActive = true;
+    public bool zoom = false;
+    public GameObject mainCamera;
+
 
     // Private variables.
     private Rigidbody playerRigidbody;
@@ -25,8 +29,11 @@ public class PlayerController : MonoBehaviour
         RotatePlayer();
         AcceleratePlayer();
 
-        // Keep player on screen.
-        ConstrainPlayerPosition();
+        if (gameActive)
+        {
+            // Keep player on screen.
+            ConstrainPlayerPosition();
+        }
     }
 
     // Rotate player around z axis.
@@ -48,7 +55,7 @@ public class PlayerController : MonoBehaviour
         // If the player hold space, add force in the (local) upward direction of the player object.
         if (Input.GetKey(KeyCode.Space))
         {
-            playerRigidbody.AddForce(transform.up * speed);
+            playerRigidbody.AddForce(transform.up * speed * Time.deltaTime);
         }
     }
 
@@ -62,7 +69,7 @@ public class PlayerController : MonoBehaviour
         int screenWidth = Screen.width;
 
         // Players position in pixels.
-        Vector3 playersPositionOnScreen = Camera.main.WorldToScreenPoint(transform.position);
+        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToScreenPoint(transform.position);
 
         // Upper boundry.
         if (playersPositionOnScreen.y > screenHeight)
@@ -96,19 +103,21 @@ public class PlayerController : MonoBehaviour
         // If the player collides with the ground they lose and get destroyed.
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Debug.Log("Trigger: " + collision.gameObject.tag);
+            Debug.Log("Collided with: " + collision.gameObject.tag);
             Destroy(gameObject);
+            gameActive = false;
         }
 
         if (collision.gameObject.CompareTag("Platform"))
         {
-            Debug.Log("Trigger: " + collision.gameObject.tag);
+            Debug.Log("Collided with: " + collision.gameObject.tag);
 
             // If the player is not paralell with the platform when landing, the player lose.
             // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
             if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1)
             {
                 Destroy(gameObject);
+                gameActive = false;
                 Debug.Log("Loser");
             }
             else
@@ -120,12 +129,28 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // If the player collides with a powerup the powerup is destroyed.
+        // If the player touches a powerup the powerup is destroyed.
         if (other.gameObject.CompareTag("Powerup"))
         {
             Destroy(other.gameObject);
             Debug.Log("Trigger: " + other.gameObject.tag);
             Destroy(other.transform);
+        }
+
+        // If the player gets close to a platform the camera zooms in (happens in FollowPlayer).
+        // TODO Make it a static camera?
+        if (other.gameObject.CompareTag("Platform"))
+        {
+            zoom = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // If the player gets further away from a platform the camera zooms out (happens in FollowPlayer).
+        if (other.gameObject.CompareTag("Platform"))
+        {
+            zoom = false;
         }
     }
 }
