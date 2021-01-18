@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DestroyOutOfBounds : MonoBehaviour
 {
-    private float topBound = 30.0f;
-    private float lowerBound = -10.0f;
+    private float topBound = 30;
+    private float lowerBound = -10;
 
     // Start is called before the first frame update
     void Start()
@@ -16,17 +16,20 @@ public class DestroyOutOfBounds : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Destrys an object if it is outside of the players view.
         if (transform.position.z > topBound)
         {
-            // Destroys the food.
-            Destroy(gameObject);
+            // Instead of destroying the projectile when it leaves the screen
+            //Destroy(gameObject);
+
+            // Just deactivate it
+            gameObject.SetActive(false);
+
         }
         else if (transform.position.z < lowerBound)
         {
-            // Outputs a Game Over to the log and destroys animals.
-            Debug.Log("GameOver!");
+            Debug.Log("Game Over!");
             Destroy(gameObject);
         }
+
     }
 }
