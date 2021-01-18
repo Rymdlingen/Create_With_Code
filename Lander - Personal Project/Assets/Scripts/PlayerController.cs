@@ -104,7 +104,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("Collided with: " + collision.gameObject.tag);
-            Destroy(gameObject);
+            //Destroy(gameObject);
             gameActive = false;
         }
 
@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
             // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
             if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1)
             {
-                Destroy(gameObject);
+                //Destroy(gameObject);
                 gameActive = false;
                 Debug.Log("Loser");
             }
