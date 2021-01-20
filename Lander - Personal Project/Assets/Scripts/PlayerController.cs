@@ -5,10 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // Public variables.
-    public float speed;
+    public float force;
     public bool gameActive = true;
     public bool zoom = false;
     public GameObject mainCamera;
+    public float speed;
 
 
     // Private variables.
@@ -34,6 +35,8 @@ public class PlayerController : MonoBehaviour
             // Keep player on screen.
             ConstrainPlayerPosition();
         }
+
+        CallculateSpeed();
     }
 
     // Rotate player around z axis.
@@ -55,7 +58,7 @@ public class PlayerController : MonoBehaviour
         // If the player hold space, add force in the (local) upward direction of the player object.
         if (Input.GetKey(KeyCode.Space))
         {
-            playerRigidbody.AddForce(transform.up * speed * Time.deltaTime);
+            playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
         }
     }
 
@@ -104,7 +107,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             Debug.Log("Collided with: " + collision.gameObject.tag);
-            //Destroy(gameObject);
+            Destroy(gameObject);
             gameActive = false;
         }
 
@@ -116,7 +119,7 @@ public class PlayerController : MonoBehaviour
             // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
             if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1)
             {
-                //Destroy(gameObject);
+                Destroy(gameObject);
                 gameActive = false;
                 Debug.Log("Loser");
             }
@@ -152,5 +155,10 @@ public class PlayerController : MonoBehaviour
         {
             zoom = false;
         }
+    }
+
+    private void CallculateSpeed()
+    {
+        speed = Mathf.RoundToInt(playerRigidbody.velocity.magnitude * 3.6f);
     }
 }
