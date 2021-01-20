@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public bool gameActive = true;
     public bool zoom = false;
     public GameObject mainCamera;
-    public float speed;
+    public float verticalSpeed;
 
 
     // Private variables.
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
             ConstrainPlayerPosition();
         }
 
-        CallculateSpeed();
+        CallculateVerticalSpeed();
     }
 
     // Rotate player around z axis.
@@ -157,8 +157,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CallculateSpeed()
+    private void CallculateVerticalSpeed()
     {
-        speed = Mathf.RoundToInt(playerRigidbody.velocity.magnitude * 3.6f);
+        verticalSpeed = Mathf.RoundToInt(playerRigidbody.velocity.magnitude * 3.6f);
     }
 }
