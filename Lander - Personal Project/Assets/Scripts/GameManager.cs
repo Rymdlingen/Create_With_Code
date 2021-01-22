@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
         fuelText.SetText("Fuel ");
 
         altitudeText.SetText("Altitude ");
-        horizontalSpeedText.SetText("Horizontal speed: ");
-        verticalSpeedText.SetText("Vertical speed: " + playerControllerScript.verticalSpeed);
+        horizontalSpeedText.SetText("Horizontal speed: " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
+        verticalSpeedText.SetText("Vertical speed: " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
     }
 }

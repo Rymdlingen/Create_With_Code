@@ -10,11 +10,16 @@ public class PlayerController : MonoBehaviour
     public bool zoom = false;
     public GameObject mainCamera;
     public float verticalSpeed;
+    public float horizontalSpeed;
+    public string verticalArrow;
+    public string horizontalArrow;
 
 
     // Private variables.
     private Rigidbody playerRigidbody;
     private float rotationInput;
+    private float verticalDirection;
+    private float horizontalDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +41,7 @@ public class PlayerController : MonoBehaviour
             ConstrainPlayerPosition();
         }
 
-        CallculateVerticalSpeed();
+        CallculateDirectionAndSpeed();
     }
 
     // Rotate player around z axis.
@@ -141,7 +146,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // If the player gets close to a platform the camera zooms in (happens in FollowPlayer).
-        // TODO Make it a static camera?
+        // TODO Make it a static camera? Static on the x, follows up a bit when player goes up and out of the area.
         if (other.gameObject.CompareTag("Platform"))
         {
             zoom = true;
@@ -157,8 +162,49 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CallculateVerticalSpeed()
+    // Calculates both the vertical and horizontal direction and speed.
+    private void CallculateDirectionAndSpeed()
     {
-        verticalSpeed = Mathf.RoundToInt(playerRigidbody.velocity.magnitude * 3.6f);
+        // TODO display the speed slower. Maybe it helps if I change the force? The movement should work a bit differently anyways.
+
+        // Calculating the vertical direction and speed.
+        verticalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.up) * 50);
+        verticalSpeed = Mathf.Abs(verticalDirection);
+
+        // Calculating the horizontal direction and speed.
+        horizontalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.right) * 50);
+        horizontalSpeed = Mathf.Abs(horizontalDirection);
+
+        // Depending on the vertical direction different arrows are displayed.
+        if (verticalSpeed == 0)
+        {
+            verticalArrow = " ";
+        }
+        else if (verticalDirection > 0)
+        {
+            verticalArrow = "↑";
+            Debug.Log("up");
+        }
+        else if (verticalDirection < 0)
+        {
+            verticalArrow = "↓";
+            Debug.Log("down");
+        }
+
+        // Depending on the horizontal direction different arrows are displayed.
+        if (horizontalSpeed == 0)
+        {
+            horizontalArrow = " ";
+        }
+        else if (horizontalDirection > 0)
+        {
+            horizontalArrow = "→";
+            Debug.Log("right");
+        }
+        else if (horizontalDirection < 0)
+        {
+            horizontalArrow = "←";
+            Debug.Log("left");
+        }
     }
 }
