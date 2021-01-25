@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public bool gameActive = true;
     public bool zoom = false;
     public GameObject mainCamera;
+    public Camera mainCameraComponent;
     public float verticalSpeed;
     public float horizontalSpeed;
     public string verticalArrow;
@@ -26,21 +27,30 @@ public class PlayerController : MonoBehaviour
     {
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
+        mainCameraComponent = mainCamera.GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Move player.
-        RotatePlayer();
-        AcceleratePlayer();
-
         if (gameActive)
         {
             // Keep player on screen.
             ConstrainPlayerPosition();
+
+            // Move player.
+            RotatePlayer();
+            AcceleratePlayer();
+
+
+        }
+        else
+        {
+            // Freeze the players position when the game ends.
+            StopPlayer();
         }
 
+        // Calculate and display direction and speed of lander.
         CallculateDirectionAndSpeed();
     }
 
@@ -67,6 +77,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void StopPlayer()
+    {
+        playerRigidbody.velocity = Vector3.zero;
+        playerRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+    }
+
     // Make sure the player stays on the screen.
     void ConstrainPlayerPosition()
     {
@@ -79,30 +95,39 @@ public class PlayerController : MonoBehaviour
         // Players position in pixels.
         Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToScreenPoint(transform.position);
 
+        playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToViewportPoint(transform.position);
+
+        playersPositionOnScreen.y = Mathf.Clamp01(playersPositionOnScreen.y);
+        playersPositionOnScreen.x = Mathf.Clamp01(playersPositionOnScreen.x);
+
+        if (mainCameraComponent.isActiveAndEnabled == true)
+        {
+            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
+        }
+
         // Upper boundry.
         if (playersPositionOnScreen.y > screenHeight)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y - 1, -2);
+            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
         }
 
         // Lower boundry.
         if (playersPositionOnScreen.y < 0)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y + 3, -2);
+            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
         }
 
         // Right boundry.
         if (playersPositionOnScreen.x > screenWidth)
         {
-            transform.position = new Vector3(transform.position.x - 1, transform.position.y, -2);
+            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
         }
 
         // Left boundry.
         if (playersPositionOnScreen.x < 0)
         {
-            transform.position = new Vector3(transform.position.x + 1, transform.position.y, -2);
+            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
         }
-
         //Debug.Log(playersPositionOnScreen);
     }
 
@@ -130,6 +155,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                gameActive = false;
                 Debug.Log("WIN!");
             }
         }
