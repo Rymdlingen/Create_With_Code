@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     private int minutes = 0;
     private bool minuteAdded = false;
 
+    private int score = 0;
+    private string scoreString = "";
+
     PlayerController playerControllerScript;
 
     // Start is called before the first frame update
@@ -30,11 +33,24 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        scoreText.SetText("Score ");
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            score += 50;
+        }
+
+        scoreString = score.ToString();
+        if (scoreString.Length < 4)
+        {
+            scoreString.PadLeft(4, '0');
+
+            Debug.Log("kort");
+        }
+
+        scoreText.SetText("Score " + scoreString);
 
         CalculateMinutesAndSeconds();
 
-        if (playerControllerScript.usingFuel)
+        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true)
         {
             fuelLeft -= 1;
         }
