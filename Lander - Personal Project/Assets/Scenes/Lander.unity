@@ -1326,7 +1326,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 25
+  orthographic size: 250
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1570,7 +1570,7 @@ Transform:
   m_GameObject: {fileID: 793770482}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.27, y: -5.46, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10.032, y: 10.032, z: 1}
   m_Children:
   - {fileID: 1817602388}
   - {fileID: 289257437}
@@ -1829,7 +1829,7 @@ Transform:
   m_GameObject: {fileID: 980997102}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: -0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 5}
+  m_LocalScale: {x: 100, y: 1, z: 50}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -2140,7 +2140,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8.333333
+  orthographic size: 83.33333
   m_Depth: -2
   m_CullingMask:
     serializedVersion: 2
@@ -2580,7 +2580,7 @@ Transform:
   m_GameObject: {fileID: 1576305413}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.27, y: -5.46, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10.032, y: 10.032, z: 1}
   m_Children:
   - {fileID: 1259541348}
   - {fileID: 1360042946}
@@ -3235,6 +3235,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758816, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 15.047999
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758816, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10.032
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758816, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758820, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_Drag
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758820, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758820, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_Mass
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 215967283021758820, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 215967283021758821, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
         type: 3}
       propertyPath: m_Name
@@ -3248,7 +3283,7 @@ PrefabInstance:
     - target: {fileID: 215967283021758831, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
         type: 3}
       propertyPath: force
-      value: 1000
+      value: 1200000
       objectReference: {fileID: 0}
     - target: {fileID: 215967283021758831, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
         type: 3}

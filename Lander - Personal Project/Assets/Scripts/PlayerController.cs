@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public float horizontalSpeed;
     public string verticalArrow;
     public string horizontalArrow;
+    public bool usingFuel = false;
 
 
     // Private variables.
@@ -57,14 +58,22 @@ public class PlayerController : MonoBehaviour
     // Rotate player around z axis.
     void RotatePlayer()
     {
-        // TODO need to be more precise and need to start reseting I think, check how it works in lunar lander.
-        // 8/1 Added drag, seems to work!
-
         // Get the value of the players input on the rotation, from left and right arrows.
-        rotationInput = Input.GetAxis("Horizontal");
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && transform.rotation.z < 90)
+        {
+            rotationInput = -11.25f;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && transform.rotation.z > -90)
+        {
+            rotationInput = 11.25f;
+        }
+        else
+        {
+            rotationInput = 0;
+        }
 
         // Add torque.
-        playerRigidbody.AddTorque(Vector3.back * rotationInput);
+        transform.Rotate(Vector3.back * rotationInput);
     }
 
     // Accelerate player in its local direction.
@@ -74,6 +83,11 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
+            usingFuel = true;
+        }
+        else
+        {
+            usingFuel = false;
         }
     }
 
@@ -147,7 +161,7 @@ public class PlayerController : MonoBehaviour
 
             // If the player is not paralell with the platform when landing, the player lose.
             // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
-            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1)
+            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 50)
             {
                 Destroy(gameObject);
                 gameActive = false;
@@ -194,11 +208,11 @@ public class PlayerController : MonoBehaviour
         // TODO display the speed slower. Maybe it helps if I change the force? The movement should work a bit differently anyways.
 
         // Calculating the vertical direction and speed.
-        verticalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.up) * 50);
+        verticalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.up) * 3.6f);
         verticalSpeed = Mathf.Abs(verticalDirection);
 
         // Calculating the horizontal direction and speed.
-        horizontalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.right) * 50);
+        horizontalDirection = Mathf.RoundToInt(playerRigidbody.velocity.x * transform.right.x * 3.6f);
         horizontalSpeed = Mathf.Abs(horizontalDirection);
 
         // Depending on the vertical direction different arrows are displayed.
