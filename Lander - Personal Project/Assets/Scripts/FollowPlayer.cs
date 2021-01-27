@@ -9,8 +9,8 @@ public class FollowPlayer : MonoBehaviour
     public Camera mainCamera;
     public Camera zoomCamera;
 
-    float followTime = 3.0f;
-    float followCounter;
+    float followDistance = 30.0f;
+    float zoomCameraOffset;
 
     // Private variables.
     private PlayerController playerControllerScript;
@@ -30,30 +30,27 @@ public class FollowPlayer : MonoBehaviour
 
         transform.position = playerControllerScript.gameObject.transform.position;
 
-        if (zoom)
-        {
-            followCounter = followTime;
-        }
-        else
-        {
-            followCounter -= Time.deltaTime;
-        }
-
-        // Changes too the zoom camera if the player enters a platforms trigger (checked in PlayerController).
+        // Changes too the zoom camera if the player enters a platforms trigger.
         if (zoom)
         {
             mainCamera.enabled = false;
             zoomCamera.enabled = true;
         }
-        // Changes too the main camera if the player exits a platforms trigger (checked in PlayerController).
+        // Changes too the main camera if the player exits a platforms trigger.
         else
         {
-            if (followCounter > 0)
+            mainCamera.enabled = true;
+            zoomCamera.enabled = false;
+
+            // TODO use altitude to see when to go back to big camera.
+            if (zoom)
             {
-                zoomCamera.transform.position = new Vector3(zoomCamera.transform.position.x, (transform.position + Vector3.up * 20).y, zoomCamera.transform.position.z);
+                // The zoom camera follows the player upwards for a bit after leaving the zoom area.
+                zoomCamera.transform.position = new Vector3(zoomCamera.transform.position.x, transform.position.y - zoomCameraOffset, zoomCamera.transform.position.z);
             }
             else
             {
+                // Switches back to the main camera.
                 mainCamera.enabled = true;
                 zoomCamera.enabled = false;
             }
@@ -65,7 +62,7 @@ public class FollowPlayer : MonoBehaviour
         if (other.gameObject.CompareTag("Platform"))
         {
             zoom = true;
-            zoomCamera.transform.position = new Vector3(other.gameObject.transform.position.x, (other.gameObject.transform.position + Vector3.up * 20).y, -14);
+            zoomCamera.transform.position = new Vector3(other.gameObject.transform.position.x, (other.gameObject.transform.position + Vector3.up * 30f).y, -14);
         }
     }
 
@@ -74,6 +71,7 @@ public class FollowPlayer : MonoBehaviour
         // If the player gets further away from a platform the camera zooms out.
         if (other.gameObject.CompareTag("Platform"))
         {
+            zoomCameraOffset = transform.position.y - zoomCamera.transform.position.y;
             zoom = false;
         }
     }
