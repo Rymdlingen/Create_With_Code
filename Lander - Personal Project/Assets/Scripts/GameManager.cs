@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private int minutes = 0;
     private bool minuteAdded = false;
 
-    private int score = 0;
+    public int score = 0;
     private string scoreString = "";
 
     PlayerController playerControllerScript;
@@ -39,11 +39,17 @@ public class GameManager : MonoBehaviour
         }
 
         scoreString = score.ToString();
-        if (scoreString.Length < 4)
+        if (scoreString.Length == 1)
         {
-            scoreString.PadLeft(4, '0');
-
-            Debug.Log("kort");
+            scoreString = "000" + scoreString;
+        }
+        else if (scoreString.Length == 2)
+        {
+            scoreString = "00" + scoreString;
+        }
+        else if (scoreString.Length == 3)
+        {
+            scoreString = "0" + scoreString;
         }
 
         scoreText.SetText("Score " + scoreString);

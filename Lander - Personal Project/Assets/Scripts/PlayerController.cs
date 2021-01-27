@@ -23,12 +23,18 @@ public class PlayerController : MonoBehaviour
     private float verticalDirection;
     private float horizontalDirection;
 
+    FollowPlayer followPlayerScript;
+
     // Start is called before the first frame update
     void Start()
     {
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
+
+
         mainCameraComponent = mainCamera.GetComponent<Camera>();
+
+        followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
     }
 
     // Update is called once per frame
@@ -42,8 +48,6 @@ public class PlayerController : MonoBehaviour
             // Move player.
             RotatePlayer();
             AcceleratePlayer();
-
-
         }
         else
         {
@@ -58,28 +62,33 @@ public class PlayerController : MonoBehaviour
     // Rotate player around z axis.
     void RotatePlayer()
     {
-        // Get the value of the players input on the rotation, from left and right arrows.
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && transform.rotation.z < 90)
+        // Rotates player 11.25 degrees to the left or right based on input, max rotation is 90 degrees left or right.
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
         {
+            // Rotation to the left.
             rotationInput = -11.25f;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && transform.rotation.z > -90)
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 91))
         {
+            // Rotation to the right.
             rotationInput = 11.25f;
         }
         else
         {
+            // No rotation.
             rotationInput = 0;
         }
 
-        // Add torque.
+        // Rotate player.
         transform.Rotate(Vector3.back * rotationInput);
     }
+
 
     // Accelerate player in its local direction.
     void AcceleratePlayer()
     {
         // If the player hold space, add force in the (local) upward direction of the player object.
+        // Use up fuel when space is pressed.
         if (Input.GetKey(KeyCode.Space))
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
@@ -87,10 +96,12 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            // Not using fuel when space is not pressed.
             usingFuel = false;
         }
     }
 
+    // For freezing the players position when the game is not active. (used when player successfully lands on a platform.)
     void StopPlayer()
     {
         playerRigidbody.velocity = Vector3.zero;
@@ -102,18 +113,18 @@ public class PlayerController : MonoBehaviour
     {
         // TODO needs to work smoother. Maybe stop the forward force?
 
-        // Screen boundaries.
+        // Screen boundaries in pixels.
         int screenHeight = Screen.height;
         int screenWidth = Screen.width;
 
-        // Players position in pixels.
-        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToScreenPoint(transform.position);
+        // Players position in viewport (?).
+        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToViewportPoint(transform.position);
 
-        playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToViewportPoint(transform.position);
-
+        // ??
         playersPositionOnScreen.y = Mathf.Clamp01(playersPositionOnScreen.y);
         playersPositionOnScreen.x = Mathf.Clamp01(playersPositionOnScreen.x);
 
+        // ??
         if (mainCameraComponent.isActiveAndEnabled == true)
         {
             transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
@@ -142,7 +153,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
         }
-        //Debug.Log(playersPositionOnScreen);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -150,27 +160,21 @@ public class PlayerController : MonoBehaviour
         // If the player collides with the ground they lose and get destroyed.
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Debug.Log("Collided with: " + collision.gameObject.tag);
-            Destroy(gameObject);
-            gameActive = false;
+            Lost();
         }
 
         if (collision.gameObject.CompareTag("Platform"))
         {
-            Debug.Log("Collided with: " + collision.gameObject.tag);
-
-            // If the player is not paralell with the platform when landing, the player lose.
-            // TODO add speed to losing condition, if the player is falling to fast into the platform, they lose.
-            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 50)
+            // If the player is not paralell with the platform when landing, they lose.
+            // If the player is falling to fast into the platform, they lose.
+            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 25 || horizontalSpeed > 31)
             {
-                Destroy(gameObject);
-                gameActive = false;
-                Debug.Log("Loser");
+                Lost();
             }
             else
             {
+                Landed(verticalSpeed, horizontalSpeed);
                 gameActive = false;
-                Debug.Log("WIN!");
             }
         }
     }
@@ -189,7 +193,8 @@ public class PlayerController : MonoBehaviour
         // TODO Make it a static camera? Static on the x, follows up a bit when player goes up and out of the area.
         if (other.gameObject.CompareTag("Platform"))
         {
-            zoom = true;
+            // zoom = true;
+            //followPlayerScript.gameObject.transform.position = other.gameObject.transform.position + Vector3.up * 15;
         }
     }
 
@@ -198,7 +203,7 @@ public class PlayerController : MonoBehaviour
         // If the player gets further away from a platform the camera zooms out (happens in FollowPlayer).
         if (other.gameObject.CompareTag("Platform"))
         {
-            zoom = false;
+            //zoom = false;
         }
     }
 
@@ -223,12 +228,10 @@ public class PlayerController : MonoBehaviour
         else if (verticalDirection > 0)
         {
             verticalArrow = "↑";
-            Debug.Log("up");
         }
         else if (verticalDirection < 0)
         {
             verticalArrow = "↓";
-            Debug.Log("down");
         }
 
         // Depending on the horizontal direction different arrows are displayed.
@@ -239,12 +242,28 @@ public class PlayerController : MonoBehaviour
         else if (horizontalDirection > 0)
         {
             horizontalArrow = "→";
-            Debug.Log("right");
         }
         else if (horizontalDirection < 0)
         {
             horizontalArrow = "←";
-            Debug.Log("left");
+        }
+    }
+
+    public void Lost()
+    {
+        Destroy(gameObject);
+        gameActive = false;
+    }
+
+    public void Landed(float verticalSpeed, float horizontalSpeed)
+    {
+        if (verticalSpeed > 15 || horizontalSpeed > 15)
+        {
+            // hard landing = 15 base points.
+        }
+        else
+        {
+            // soft landing = 50 base points.
         }
     }
 }

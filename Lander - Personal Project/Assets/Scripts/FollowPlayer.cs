@@ -9,8 +9,13 @@ public class FollowPlayer : MonoBehaviour
     public Camera mainCamera;
     public Camera zoomCamera;
 
+    float followTime = 3.0f;
+    float followCounter;
+
     // Private variables.
     private PlayerController playerControllerScript;
+
+    bool zoom = false;
 
     // Start is called before the first frame update.
     void Start()
@@ -22,14 +27,20 @@ public class FollowPlayer : MonoBehaviour
     // Update is called once per frame.
     void Update()
     {
-        // The zoom camera follows the player if the game is active.
-        if (playerControllerScript.gameActive)
+
+        transform.position = playerControllerScript.gameObject.transform.position;
+
+        if (zoom)
         {
-            transform.position = player.transform.position;
+            followCounter = followTime;
+        }
+        else
+        {
+            followCounter -= Time.deltaTime;
         }
 
         // Changes too the zoom camera if the player enters a platforms trigger (checked in PlayerController).
-        if (playerControllerScript.zoom)
+        if (zoom)
         {
             mainCamera.enabled = false;
             zoomCamera.enabled = true;
@@ -37,8 +48,33 @@ public class FollowPlayer : MonoBehaviour
         // Changes too the main camera if the player exits a platforms trigger (checked in PlayerController).
         else
         {
-            mainCamera.enabled = true;
-            zoomCamera.enabled = false;
+            if (followCounter > 0)
+            {
+                zoomCamera.transform.position = new Vector3(zoomCamera.transform.position.x, (transform.position + Vector3.up * 20).y, zoomCamera.transform.position.z);
+            }
+            else
+            {
+                mainCamera.enabled = true;
+                zoomCamera.enabled = false;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Platform"))
+        {
+            zoom = true;
+            zoomCamera.transform.position = new Vector3(other.gameObject.transform.position.x, (other.gameObject.transform.position + Vector3.up * 20).y, -14);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // If the player gets further away from a platform the camera zooms out.
+        if (other.gameObject.CompareTag("Platform"))
+        {
+            zoom = false;
         }
     }
 }
