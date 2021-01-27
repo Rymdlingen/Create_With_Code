@@ -33,35 +33,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            score += 50;
-        }
-
-        scoreString = score.ToString();
-        if (scoreString.Length == 1)
-        {
-            scoreString = "000" + scoreString;
-        }
-        else if (scoreString.Length == 2)
-        {
-            scoreString = "00" + scoreString;
-        }
-        else if (scoreString.Length == 3)
-        {
-            scoreString = "0" + scoreString;
-        }
-
-        scoreText.SetText("Score " + scoreString);
-
+        CalculateScore();
         CalculateMinutesAndSeconds();
-
-        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true)
-        {
-            fuelLeft -= 1;
-        }
-        fuelText.SetText("Fuel " + fuelLeft);
-
+        CalculateFuel();
 
         altitudeText.SetText("Altitude ");
         horizontalSpeedText.SetText("Horizontal speed: " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
@@ -106,5 +80,38 @@ public class GameManager : MonoBehaviour
 
         // Change the displayed time.
         timeText.SetText("Time " + time);
+    }
+
+    private void CalculateScore()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            score += 50;
+        }
+
+        scoreString = score.ToString();
+        if (scoreString.Length == 1)
+        {
+            scoreString = "000" + scoreString;
+        }
+        else if (scoreString.Length == 2)
+        {
+            scoreString = "00" + scoreString;
+        }
+        else if (scoreString.Length == 3)
+        {
+            scoreString = "0" + scoreString;
+        }
+
+        scoreText.SetText("Score " + scoreString);
+    }
+
+    private void CalculateFuel()
+    {
+        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true)
+        {
+            fuelLeft -= 1;
+        }
+        fuelText.SetText("Fuel " + fuelLeft);
     }
 }
