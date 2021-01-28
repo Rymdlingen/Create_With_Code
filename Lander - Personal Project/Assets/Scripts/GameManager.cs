@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,35 +18,45 @@ public class GameManager : MonoBehaviour
     private int seconds;
     private int minutes = 0;
     private bool minuteAdded = false;
+    public int oldTime;
 
     public int score = 0;
     private string scoreString = "";
 
-    PlayerController playerControllerScript;
+    public GameObject playerPrefab;
+
+    public PlayerController playerControllerScript;
+
+    private GameObject player;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
-
+        ResetPlayer();
     }
 
     // Update is called once per frame
     void Update()
     {
+
         CalculateScore();
         CalculateMinutesAndSeconds();
         CalculateFuel();
 
-        altitudeText.SetText("Altitude ");
+        altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 10));
         horizontalSpeedText.SetText("Horizontal speed: " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
         verticalSpeedText.SetText("Vertical speed: " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
+
+        if (fuelLeft < 1)
+        {
+            EndGame();
+        }
     }
 
     private void CalculateMinutesAndSeconds()
     {
         // Start timer.
-        timer = Mathf.RoundToInt(Time.realtimeSinceStartup);
+        timer = Mathf.RoundToInt(Time.realtimeSinceStartup) - oldTime;
 
         // Calculate how many seconds has passed minus all passed full minutes.
         seconds = timer - 60 * minutes;
@@ -113,5 +124,52 @@ public class GameManager : MonoBehaviour
             fuelLeft -= 1;
         }
         fuelText.SetText("Fuel " + fuelLeft);
+    }
+
+    public void ResetPlayer()
+    {
+        GameObject.Find("Focal Point").GetComponent<FollowPlayer>().zoom = false;
+        GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableMainCamera();
+        player = Instantiate(playerPrefab, new Vector3(-427, 147, -2), playerPrefab.transform.rotation);
+        playerControllerScript = player.GetComponent<PlayerController>();
+        player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0) * playerControllerScript.force * Time.deltaTime, ForceMode.Impulse);
+        playerControllerScript.gameActive = true;
+    }
+
+    public void SuccessfulLandingScreen(bool active)
+    {
+        GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject.SetActive(active);
+    }
+
+    public void FailedLandingScreen(bool active)
+    {
+        GameObject.Find("Canvas").transform.Find("FailedLanding").gameObject.SetActive(active);
+    }
+
+    private void EndScreen(bool active)
+    {
+        GameObject.Find("Canvas").transform.Find("GameOver").gameObject.SetActive(active);
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void ContinueButton()
+    {
+        SuccessfulLandingScreen(false);
+        FailedLandingScreen(false);
+        if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
+        {
+            Destroy(playerControllerScript.gameObject);
+        }
+        ResetPlayer();
+    }
+
+    private void EndGame()
+    {
+        playerControllerScript.StopPlayer();
+        EndScreen(true);
     }
 }

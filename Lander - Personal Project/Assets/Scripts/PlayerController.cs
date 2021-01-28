@@ -15,7 +15,9 @@ public class PlayerController : MonoBehaviour
     public string verticalArrow;
     public string horizontalArrow;
     public bool usingFuel = false;
-
+    public int basePoints = 0;
+    public RaycastHit hit;
+    public bool gameOver = false;
 
     // Private variables.
     private Rigidbody playerRigidbody;
@@ -31,10 +33,18 @@ public class PlayerController : MonoBehaviour
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
 
+        mainCamera = GameObject.Find("Main Camera");
 
         mainCameraComponent = mainCamera.GetComponent<Camera>();
 
         followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
+    }
+
+
+    private void FixedUpdate()
+    {
+        // Calculates the distance between the lander and the ground directly below.
+        Altitude();
     }
 
     // Update is called once per frame
@@ -51,8 +61,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Freeze the players position when the game ends.
-            StopPlayer();
+
         }
 
         // Calculate and display direction and speed of lander.
@@ -102,7 +111,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // For freezing the players position when the game is not active. (used when player successfully lands on a platform.)
-    void StopPlayer()
+    public void StopPlayer()
     {
         playerRigidbody.velocity = Vector3.zero;
         playerRigidbody.constraints = RigidbodyConstraints.FreezeAll;
@@ -160,16 +169,16 @@ public class PlayerController : MonoBehaviour
         // If the player collides with the ground they lose and get destroyed.
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Lost();
+            Crash();
         }
 
         if (collision.gameObject.CompareTag("Platform"))
         {
             // If the player is not paralell with the platform when landing, they lose.
             // If the player is falling to fast into the platform, they lose.
-            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 25 || horizontalSpeed > 31)
+            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 35 || horizontalSpeed > 31)
             {
-                Lost();
+                Crash();
             }
             else
             {
@@ -188,23 +197,6 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Trigger: " + other.gameObject.tag);
             Destroy(other.transform);
         }
-
-        // If the player gets close to a platform the camera zooms in (happens in FollowPlayer).
-        // TODO Make it a static camera? Static on the x, follows up a bit when player goes up and out of the area.
-        if (other.gameObject.CompareTag("Platform"))
-        {
-            // zoom = true;
-            //followPlayerScript.gameObject.transform.position = other.gameObject.transform.position + Vector3.up * 15;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        // If the player gets further away from a platform the camera zooms out (happens in FollowPlayer).
-        if (other.gameObject.CompareTag("Platform"))
-        {
-            //zoom = false;
-        }
     }
 
     // Calculates both the vertical and horizontal direction and speed.
@@ -213,11 +205,11 @@ public class PlayerController : MonoBehaviour
         // TODO display the speed slower. Maybe it helps if I change the force? The movement should work a bit differently anyways.
 
         // Calculating the vertical direction and speed.
-        verticalDirection = Mathf.RoundToInt(Vector3.Dot(playerRigidbody.velocity, transform.up) * 3.6f);
+        verticalDirection = Mathf.RoundToInt(playerRigidbody.velocity.y * 3.6f);
         verticalSpeed = Mathf.Abs(verticalDirection);
 
         // Calculating the horizontal direction and speed.
-        horizontalDirection = Mathf.RoundToInt(playerRigidbody.velocity.x * transform.right.x * 3.6f);
+        horizontalDirection = Mathf.RoundToInt(playerRigidbody.velocity.x * 3.6f);
         horizontalSpeed = Mathf.Abs(horizontalDirection);
 
         // Depending on the vertical direction different arrows are displayed.
@@ -249,21 +241,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void Lost()
+    public void Crash()
     {
+        GameObject.Find("Game Manager").GetComponent<GameManager>().FailedLandingScreen(true);
         Destroy(gameObject);
         gameActive = false;
     }
 
     public void Landed(float verticalSpeed, float horizontalSpeed)
     {
+        GameObject.Find("Game Manager").GetComponent<GameManager>().SuccessfulLandingScreen(true);
+
+        // Freeze the players position when landed.
+        StopPlayer();
+
         if (verticalSpeed > 15 || horizontalSpeed > 15)
         {
-            // hard landing = 15 base points.
+            basePoints = 15;
         }
         else
         {
-            // soft landing = 50 base points.
+            basePoints = 50;
         }
+    }
+
+    private void Altitude()
+    {
+        Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
     }
 }

@@ -28,13 +28,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 215967283021758821}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
   m_LocalPosition: {x: 0.674, y: 0, z: -2}
-  m_LocalScale: {x: 1.5, y: 1, z: 1.5}
+  m_LocalScale: {x: 15, y: 10, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
 --- !u!33 &215967283021758817
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -88,8 +88,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 215967283021758821}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 5
+  m_Mass: 1000
+  m_Drag: 0
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -108,10 +108,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1424b5e12ba8403fac042a142abc38a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1000
+  force: 1200000
   gameActive: 1
   zoom: 0
   mainCamera: {fileID: 0}
+  mainCameraComponent: {fileID: 0}
+  verticalSpeed: 0
+  horizontalSpeed: 0
+  verticalArrow: 
+  horizontalArrow: 
+  usingFuel: 0
+  basePoints: 0
+  gameOver: 0
 --- !u!65 &215967283021758819
 BoxCollider:
   m_ObjectHideFlags: 0

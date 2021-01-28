@@ -11,6 +11,8 @@ public class GivePointsToPlayer : MonoBehaviour
 
     private GameManager gameManagerScript;
 
+    private PlayerController playerControllerScript;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,12 +29,13 @@ public class GivePointsToPlayer : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            //gameManagerScript.score += Points();
+            playerControllerScript = collision.gameObject.GetComponent<PlayerController>();
+            gameManagerScript.score += Points();
         }
     }
 
     public int Points()
     {
-        return basePoints * multiplier;
+        return playerControllerScript.basePoints * multiplier;
     }
 }
