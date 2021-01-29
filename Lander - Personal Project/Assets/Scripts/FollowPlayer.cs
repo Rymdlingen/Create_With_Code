@@ -21,7 +21,7 @@ public class FollowPlayer : MonoBehaviour
     void Start()
     {
         // Connects to the PlayerController script, used to see if the game is active and if the camera should zoom.
-        playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
+        // playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame.
@@ -30,9 +30,10 @@ public class FollowPlayer : MonoBehaviour
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
             playerControllerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+            transform.position = playerControllerScript.gameObject.transform.position;
         }
 
-        transform.position = playerControllerScript.gameObject.transform.position;
+
 
         // Changes too the zoom camera if the player enters a platforms trigger.
         if (zoom)

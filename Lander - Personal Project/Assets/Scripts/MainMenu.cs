@@ -5,12 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-
     // Activated by pressing the play button in the main menu.
     public void PlayGame()
     {
         SceneManager.LoadScene("Lander");
-        GameObject.Find("Game Manager").GetComponent<GameManager>().oldTime = Mathf.RoundToInt(Time.realtimeSinceStartup);
+        //GameObject.Find("Game Manager").GetComponent<GameManager>().oldTime = Mathf.RoundToInt(Time.realtimeSinceStartup);
     }
 
     // Activated by pressing the quit button in the main menu.

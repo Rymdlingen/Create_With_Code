@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI horizontalSpeedText;
     [SerializeField] TextMeshProUGUI verticalSpeedText;
 
-    private int fuelLeft = 2000;
+    private int fuelLeft = 4000;
     private int timer;
     private int seconds;
     private int minutes = 0;
@@ -29,10 +29,16 @@ public class GameManager : MonoBehaviour
 
     private GameObject player;
 
+    string timeString;
+
+    public MainMenu mainMenuScript;
+
     // Start is called before the first frame update
     void Start()
     {
         ResetPlayer();
+        //oldTime = Mathf.RoundToInt(Time.realtimeSinceStartup);
+        //minutes = 0;
     }
 
     // Update is called once per frame
@@ -40,7 +46,11 @@ public class GameManager : MonoBehaviour
     {
 
         CalculateScore();
-        CalculateMinutesAndSeconds();
+        if (fuelLeft > 1)
+        {
+            CalculateMinutesAndSeconds();
+        }
+        DisplayTime();
         CalculateFuel();
 
         altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 10));
@@ -87,10 +97,15 @@ public class GameManager : MonoBehaviour
         }
 
         // Concatenate the minute and seconds.
-        string time = minutesText + ":" + secondsText;
+        timeString = minutesText + ":" + secondsText;
 
+
+    }
+
+    public void DisplayTime()
+    {
         // Change the displayed time.
-        timeText.SetText("Time " + time);
+        timeText.SetText("Time " + timeString);
     }
 
     private void CalculateScore()
@@ -119,7 +134,7 @@ public class GameManager : MonoBehaviour
 
     private void CalculateFuel()
     {
-        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true)
+        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true && fuelLeft > 0)
         {
             fuelLeft -= 1;
         }
