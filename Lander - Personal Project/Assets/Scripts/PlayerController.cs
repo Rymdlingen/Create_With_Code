@@ -21,7 +21,13 @@ public class PlayerController : MonoBehaviour
 
     // Private variables.
     private Rigidbody playerRigidbody;
+    // For rotating.
     private float rotationInput;
+    private float rotationAngle;
+    private bool hasRotated = false;
+    private float rotationCoolDown = 0.2f;
+    private float rotationCoolDownCounter;
+    // For calculating the direction.
     private float verticalDirection;
     private float horizontalDirection;
 
@@ -71,25 +77,42 @@ public class PlayerController : MonoBehaviour
     // Rotate player around z axis.
     void RotatePlayer()
     {
+        rotationInput = Input.GetAxis("Horizontal");
+
+        if (hasRotated)
+        {
+            rotationCoolDownCounter = rotationCoolDown;
+            hasRotated = false;
+        }
+        else
+        {
+            rotationCoolDownCounter -= Time.deltaTime;
+        }
+
+        // TODO I dont want the rotation to change after the arrow is released.
+
         // Rotates player 11.25 degrees to the left or right based on input, max rotation is 90 degrees left or right.
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
+        if (rotationCoolDownCounter < 0 && rotationInput < 0 && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
         {
             // Rotation to the left.
-            rotationInput = -11.25f;
+            rotationAngle = -11.25f;
+            hasRotated = true;
         }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 91))
+        else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 91))
         {
             // Rotation to the right.
-            rotationInput = 11.25f;
+            rotationAngle = 11.25f;
+            hasRotated = true;
         }
         else
         {
             // No rotation.
-            rotationInput = 0;
+            rotationAngle = 0;
         }
 
+
         // Rotate player.
-        transform.Rotate(Vector3.back * rotationInput);
+        transform.Rotate(Vector3.back * rotationAngle);
     }
 
 
