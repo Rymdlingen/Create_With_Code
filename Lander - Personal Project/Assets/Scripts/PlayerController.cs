@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private float rotationInput;
     private float rotationAngle;
     private bool hasRotated = false;
-    private float rotationCoolDown = 0.2f;
+    private float rotationCoolDown = 0.25f;
     private float rotationCoolDownCounter;
     // For calculating the direction.
     private float verticalDirection;
@@ -89,8 +89,6 @@ public class PlayerController : MonoBehaviour
             rotationCoolDownCounter -= Time.deltaTime;
         }
 
-        // TODO I dont want the rotation to change after the arrow is released.
-
         // Rotates player 11.25 degrees to the left or right based on input, max rotation is 90 degrees left or right.
         if (rotationCoolDownCounter < 0 && rotationInput < 0 && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
         {
@@ -121,7 +119,7 @@ public class PlayerController : MonoBehaviour
     {
         // If the player hold space, add force in the (local) upward direction of the player object.
         // Use up fuel when space is pressed.
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetAxis("Jump") > 0)
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
             usingFuel = true;
