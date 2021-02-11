@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour
     public bool gameOver = false;
     public bool addFuel = false;
 
+    public bool zoomCameraActiveAndFarLeft = false;
+    public bool zoomCameraActiveAndFarRight = false;
+
     // Private variables.
     private Rigidbody playerRigidbody;
     // For rotating.
@@ -180,6 +183,30 @@ public class PlayerController : MonoBehaviour
         if (playersPositionOnScreen.x < 0)
         {
             transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
+        }
+
+        if (zoomCameraActiveAndFarLeft || zoomCameraActiveAndFarRight)
+        {
+            // Players position in viewport (?).
+            Vector3 playersPositionOnZoomScreen = GameObject.Find("Zoom Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
+
+            // ??
+            playersPositionOnZoomScreen.y = Mathf.Clamp01(playersPositionOnZoomScreen.y);
+            playersPositionOnZoomScreen.x = Mathf.Clamp01(playersPositionOnZoomScreen.x);
+
+            // ??
+            transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnZoomScreen);
+
+
+            if (zoomCameraActiveAndFarLeft && playersPositionOnZoomScreen.x < 0)
+            {
+                transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnScreen);
+            }
+
+            if (zoomCameraActiveAndFarRight && playersPositionOnZoomScreen.x > screenWidth)
+            {
+                transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnScreen);
+            }
         }
     }
 

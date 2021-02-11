@@ -89,9 +89,6 @@ public class GameManager : MonoBehaviour
             addTime -= 1;
             timer += 1;
         }
-        //Debug.Log(addTime);
-        Debug.Log("timer " + timer + "minutes" + minutes + "seconds" + seconds);
-
 
         // Calculate how many seconds has passed minus all passed full minutes.
         seconds = timer - (60 * minutes);

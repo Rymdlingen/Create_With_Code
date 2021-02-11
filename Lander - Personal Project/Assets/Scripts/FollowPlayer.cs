@@ -14,6 +14,7 @@ public class FollowPlayer : MonoBehaviour
 
     Vector3 latestPlatformPosition;
     float zoomCameraMinY;
+    float zoomCameraXPositionRange = 260;
 
     // Private variables.
     private PlayerController playerControllerScript;
@@ -25,7 +26,8 @@ public class FollowPlayer : MonoBehaviour
     // Start is called before the first frame update.
     void Start()
     {
-
+        zoomCameraXPositionRange = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x - Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x / 3;
+        Debug.Log(zoomCameraXPositionRange);
     }
 
     // Update is called once per frame.
@@ -39,13 +41,32 @@ public class FollowPlayer : MonoBehaviour
 
         if (!zoom)
         {
+            playerControllerScript.zoomCameraActiveAndFarLeft = false;
+            playerControllerScript.zoomCameraActiveAndFarRight = false;
             return;
         }
 
         float zoomCameraY = Mathf.Max(transform.position.y - zoomCameraOffset, zoomCameraMinY);
-        float zoomCameraX = Mathf.Max(latestPlatformPosition.x, )
+        float zoomCameraX;
 
-        zoomCamera.transform.position = new Vector3(latestPlatformPosition.x, zoomCameraY, zoomCamera.transform.position.z);
+        if (latestPlatformPosition.x < 0)
+        {
+            zoomCameraX = Mathf.Max(latestPlatformPosition.x, -zoomCameraXPositionRange);
+            if (zoomCameraX == -zoomCameraXPositionRange)
+            {
+                playerControllerScript.zoomCameraActiveAndFarLeft = true;
+            }
+        }
+        else
+        {
+            zoomCameraX = Mathf.Min(latestPlatformPosition.x, zoomCameraXPositionRange);
+            if (zoomCameraX == zoomCameraXPositionRange)
+            {
+                playerControllerScript.zoomCameraActiveAndFarRight = true;
+            }
+        }
+
+        zoomCamera.transform.position = new Vector3(zoomCameraX, zoomCameraY, zoomCamera.transform.position.z);
 
         if (transform.position.y - latestPlatformPosition.y > 130)
         {
