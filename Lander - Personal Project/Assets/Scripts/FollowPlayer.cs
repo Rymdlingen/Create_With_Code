@@ -9,19 +9,23 @@ public class FollowPlayer : MonoBehaviour
     public Camera mainCamera;
     public Camera zoomCamera;
 
-    float followDistance = 30.0f;
-    float zoomCameraOffset;
+    float zoomCameraMinDistanceToPlatform = 40.0f;
+    float zoomCameraOffset = 55;
+
+    Vector3 latestPlatformPosition;
+    float zoomCameraMinY;
 
     // Private variables.
     private PlayerController playerControllerScript;
 
     public bool zoom = false;
 
+    public RaycastHit hit;
+
     // Start is called before the first frame update.
     void Start()
     {
-        // Connects to the PlayerController script, used to see if the game is active and if the camera should zoom.
-        // playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
+
     }
 
     // Update is called once per frame.
@@ -33,46 +37,39 @@ public class FollowPlayer : MonoBehaviour
             transform.position = playerControllerScript.gameObject.transform.position;
         }
 
-
-
-        // Changes too the zoom camera if the player enters a platforms trigger.
-        if (zoom)
+        if (!zoom)
         {
-            EnableZoomCamera();
+            return;
         }
-        // Changes too the main camera if the player exits a platforms trigger.
-        else
+
+        float zoomCameraY = Mathf.Max(transform.position.y - zoomCameraOffset, zoomCameraMinY);
+        float zoomCameraX = Mathf.Max(latestPlatformPosition.x, )
+
+        zoomCamera.transform.position = new Vector3(latestPlatformPosition.x, zoomCameraY, zoomCamera.transform.position.z);
+
+        if (transform.position.y - latestPlatformPosition.y > 130)
         {
-            // Uses altitude to see when to go back to big camera.
-            if (playerControllerScript.hit.distance < 130)
-            {
-                // The zoom camera follows the player upwards for a bit after leaving the zoom area.
-                zoomCamera.transform.position = new Vector3(zoomCamera.transform.position.x, transform.position.y - zoomCameraOffset, zoomCamera.transform.position.z);
-            }
-            else
-            {
-                // Switches back to the main camera.
-                EnableMainCamera();
-            }
+            // Switches back to the main camera.
+            EnableMainCamera();
         }
+        else if (latestPlatformPosition.x - transform.position.x > 100 || latestPlatformPosition.x - transform.position.x < -100)
+        {
+            // Switches back to the main camera.
+            EnableMainCamera();
+        }
+
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Platform"))
         {
-            zoom = true;
-            zoomCamera.transform.position = new Vector3(other.gameObject.transform.position.x, (other.gameObject.transform.position + Vector3.up * 30f).y, -14);
-        }
-    }
+            // Changes too the zoom camera if the player enters a platforms trigger.
+            EnableZoomCamera();
 
-    private void OnTriggerExit(Collider other)
-    {
-        // If the player gets further away from a platform the camera zooms out.
-        if (other.gameObject.CompareTag("Platform"))
-        {
-            zoomCameraOffset = transform.position.y - zoomCamera.transform.position.y;
-            zoom = false;
+            latestPlatformPosition = other.transform.position;
+
+            zoomCameraMinY = latestPlatformPosition.y + zoomCameraMinDistanceToPlatform;
         }
     }
 
@@ -80,11 +77,13 @@ public class FollowPlayer : MonoBehaviour
     {
         mainCamera.enabled = true;
         zoomCamera.enabled = false;
+        zoom = false;
     }
 
     private void EnableZoomCamera()
     {
         mainCamera.enabled = false;
         zoomCamera.enabled = true;
+        zoom = true;
     }
 }

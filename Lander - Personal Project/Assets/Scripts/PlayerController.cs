@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
     // Public variables.
     public float force;
     public bool gameActive = true;
-    public bool zoom = false;
     public GameObject mainCamera;
     public Camera mainCameraComponent;
     public float verticalSpeed;
@@ -18,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public int basePoints = 0;
     public RaycastHit hit;
     public bool gameOver = false;
+    public bool addFuel = false;
 
     // Private variables.
     private Rigidbody playerRigidbody;
@@ -141,8 +141,6 @@ public class PlayerController : MonoBehaviour
     // Make sure the player stays on the screen.
     void ConstrainPlayerPosition()
     {
-        // TODO needs to work smoother. Maybe stop the forward force?
-
         // Screen boundaries in pixels.
         int screenHeight = Screen.height;
         int screenWidth = Screen.width;
@@ -215,8 +213,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Powerup"))
         {
             Destroy(other.gameObject);
-            Debug.Log("Trigger: " + other.gameObject.tag);
-            Destroy(other.transform);
+            addFuel = true;
         }
     }
 
@@ -271,8 +268,6 @@ public class PlayerController : MonoBehaviour
 
     public void Landed(float verticalSpeed, float horizontalSpeed)
     {
-        GameObject.Find("Game Manager").GetComponent<GameManager>().SuccessfulLandingScreen(true);
-
         // Freeze the players position when landed.
         StopPlayer();
 

@@ -7,8 +7,6 @@ public class GivePointsToPlayer : MonoBehaviour
     // The multiplier is different depending on the size of the platform, set in Unity.
     public int multiplier;
 
-    private int basePoints = 50;
-
     private GameManager gameManagerScript;
 
     private PlayerController playerControllerScript;
@@ -30,7 +28,7 @@ public class GivePointsToPlayer : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             playerControllerScript = collision.gameObject.GetComponent<PlayerController>();
-            gameManagerScript.score += Points();
+            gameManagerScript.newPoints += Points();
         }
     }
 
