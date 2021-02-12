@@ -22,6 +22,9 @@ public class PlayerController : MonoBehaviour
     public bool zoomCameraActiveAndFarLeft = false;
     public bool zoomCameraActiveAndFarRight = false;
 
+    public int successfulLandings;
+    public int crashes;
+
     // Private variables.
     private Rigidbody playerRigidbody;
     // For rotating.
@@ -141,6 +144,14 @@ public class PlayerController : MonoBehaviour
         playerRigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
+    public void OutOfFuel()
+    {
+        //playerRigidbody.velocity = Vector3.down;
+        gameActive = false;
+        playerRigidbody.AddForce(Vector3.down * force * Time.deltaTime);
+        playerRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+    }
+
     // Make sure the player stays on the screen.
     void ConstrainPlayerPosition()
     {
@@ -228,7 +239,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                successfulLandings++;
                 Landed(verticalSpeed, horizontalSpeed);
+
                 gameActive = false;
             }
         }
@@ -237,7 +250,7 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // If the player touches a powerup the powerup is destroyed.
-        if (other.gameObject.CompareTag("Powerup"))
+        if (other.gameObject.CompareTag("Powerup") && gameActive)
         {
             Destroy(other.gameObject);
             addFuel = true;
@@ -290,6 +303,7 @@ public class PlayerController : MonoBehaviour
     {
         GameObject.Find("Game Manager").GetComponent<GameManager>().FailedLandingScreen(true);
         Destroy(gameObject);
+        crashes++;
         gameActive = false;
     }
 

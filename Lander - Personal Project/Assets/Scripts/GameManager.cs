@@ -16,7 +16,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI successfulLandningText;
     [SerializeField] TextMeshProUGUI crashedText;
 
-    private int fuelLeft = 4000;
+    [SerializeField] TextMeshProUGUI gameOverText;
+
+    private int fuelLeft = 3000;
     private int timer;
     private int seconds = 0;
     private int minutes = 0;
@@ -76,7 +78,20 @@ public class GameManager : MonoBehaviour
 
         if (fuelLeft < 1)
         {
-            EndGame();
+            GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(true);
+
+            if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
+            {
+                MakePlayerFall();
+            }
+            else
+            {
+                EndScreen(true);
+            }
+        }
+        else
+        {
+            GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
         }
     }
 
@@ -178,25 +193,33 @@ public class GameManager : MonoBehaviour
 
     public void SuccessfulLandingScreen(bool active)
     {
-        if (playerControllerScript.basePoints == 15)
+        if (fuelLeft > 0)
         {
-            successfulLandningText.SetText("You landed hard\nCommunication system destroyed\n" + newPointsString + " points");
+            if (playerControllerScript.basePoints == 15)
+            {
+                successfulLandningText.SetText("You landed hard\nCommunication system destroyed\n" + newPointsString + " points");
+            }
+            else
+            {
+                successfulLandningText.SetText("Congratulations!\nThat was a great landing\n" + newPointsString + " points");
+            }
+            GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject.SetActive(active);
         }
-        else
-        {
-            successfulLandningText.SetText("Congratulations!\nThat was a great landing\n" + newPointsString + " points");
-        }
-        GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject.SetActive(active);
     }
 
     public void FailedLandingScreen(bool active)
     {
-        crashedText.SetText("You just destroyed a 100 megabuck lander");
-        GameObject.Find("Canvas").transform.Find("FailedLanding").gameObject.SetActive(active);
+        if (fuelLeft > 0)
+        {
+            crashedText.SetText("You just destroyed a 100 megabuck lander");
+            GameObject.Find("Canvas").transform.Find("FailedLanding").gameObject.SetActive(active);
+        }
     }
 
     private void EndScreen(bool active)
     {
+        gameOverText.SetText("Game Over!\nYou had " + playerControllerScript.successfulLandings + " successful landings and you crashed " + playerControllerScript.crashes + " times.\n You scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
+        GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(!active);
         GameObject.Find("Canvas").transform.Find("GameOver").gameObject.SetActive(active);
     }
 
@@ -216,9 +239,8 @@ public class GameManager : MonoBehaviour
         ResetPlayer();
     }
 
-    private void EndGame()
+    private void MakePlayerFall()
     {
-        playerControllerScript.StopPlayer();
-        EndScreen(true);
+        playerControllerScript.OutOfFuel();
     }
 }
