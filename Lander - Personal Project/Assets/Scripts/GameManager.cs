@@ -65,8 +65,8 @@ public class GameManager : MonoBehaviour
         CalculateFuel();
 
         altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 10));
-        horizontalSpeedText.SetText("Horizontal speed: " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
-        verticalSpeedText.SetText("Vertical speed: " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
+        horizontalSpeedText.SetText("Horizontal speed " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
+        verticalSpeedText.SetText("Vertical speed " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
 
         if (playerControllerScript.basePoints > 0)
         {
@@ -134,19 +134,7 @@ public class GameManager : MonoBehaviour
         newPointsString = newPoints.ToString();
         newPoints = 0;
 
-        scoreString = score.ToString();
-        if (scoreString.Length == 1)
-        {
-            scoreString = "000" + scoreString;
-        }
-        else if (scoreString.Length == 2)
-        {
-            scoreString = "00" + scoreString;
-        }
-        else if (scoreString.Length == 3)
-        {
-            scoreString = "0" + scoreString;
-        }
+        scoreString = MakeFourCharString(score.ToString(), '0');
 
         scoreText.SetText("Score " + scoreString);
     }
@@ -163,7 +151,20 @@ public class GameManager : MonoBehaviour
         {
             fuelLeft -= 1;
         }
-        fuelText.SetText("Fuel " + fuelLeft);
+
+        fuelText.SetText("Fuel " + MakeFourCharString(fuelLeft.ToString(), '0'));
+    }
+
+    private string MakeFourCharString(string originalString, char fillerChar)
+    {
+        string fillerString = fillerChar.ToString();
+
+        for (int stringLength = originalString.Length; stringLength < 4; stringLength++)
+        {
+            originalString = fillerString + originalString;
+        }
+
+        return originalString;
     }
 
     public void ResetPlayer()
