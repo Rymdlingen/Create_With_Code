@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public bool gameOver = false;
     public bool addFuel = false;
 
+    public bool hasDrifteOutInSpace = false;
     public bool zoomCameraActiveAndFarLeft = false;
     public bool zoomCameraActiveAndFarRight = false;
 
@@ -65,7 +66,7 @@ public class PlayerController : MonoBehaviour
         if (gameActive)
         {
             // Keep player on screen.
-            ConstrainPlayerPosition();
+            CheckPlayerPosition();
 
             // Move player.
             RotatePlayer();
@@ -152,71 +153,61 @@ public class PlayerController : MonoBehaviour
         playerRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
-    // Make sure the player stays on the screen.
-    void ConstrainPlayerPosition()
+    // Looks if the players position is on the screen or not.
+    // Constrains the player inside the zoom camera area if necessary and tells the game manager if the lander drifts out in space from the main camera.
+    void CheckPlayerPosition()
     {
-        // Screen boundaries in pixels.
-        int screenHeight = Screen.height;
-        int screenWidth = Screen.width;
+        // Screen boundaries in pixels (+ buffert for the size of the lander).
+        int screenBoundaryBuffert = 10;
+        int screenHeightBoundary = Screen.height + screenBoundaryBuffert * 2;
+        int screenWidthBoundary = Screen.width + screenBoundaryBuffert;
 
-        // Players position in viewport (?).
-        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToViewportPoint(transform.position);
+        // Players position in screen points (pixels).
+        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToScreenPoint(transform.position);
 
-        // ??
-        playersPositionOnScreen.y = Mathf.Clamp01(playersPositionOnScreen.y);
-        playersPositionOnScreen.x = Mathf.Clamp01(playersPositionOnScreen.x);
-
-        // ??
+        // When the main camera is active, this checks if the lander drifts out in space.
         if (mainCameraComponent.isActiveAndEnabled == true)
         {
-            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
+            // When the lander is spawned it is to the left of the screen, moving to the right. 
+            if (playersPositionOnScreen.x < 0 && playerRigidbody.velocity.x > 0)
+            {
+                return;
+            }
+
+            // If the player gets outside the boundaries of the main camer, tell the game manager that the lander has drifted out in outer space.
+            if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0)
+            {
+                DestroyLander();
+                hasDrifteOutInSpace = true;
+            }
         }
 
-        // Upper boundry.
-        if (playersPositionOnScreen.y > screenHeight)
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
-        }
-
-        // Lower boundry.
-        if (playersPositionOnScreen.y < 0)
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
-        }
-
-        // Right boundry.
-        if (playersPositionOnScreen.x > screenWidth)
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
-        }
-
-        // Left boundry.
-        if (playersPositionOnScreen.x < 0)
-        {
-            transform.position = Camera.main.ViewportToWorldPoint(playersPositionOnScreen);
-        }
-
+        // Boundries for when the zoom camera is active to the far left or right of the screen.
         if (zoomCameraActiveAndFarLeft || zoomCameraActiveAndFarRight)
         {
-            // Players position in viewport (?).
+            // Players position in viewport points, values between 0 and 1 for all positions on screen, of screen values go higher and lower.
             Vector3 playersPositionOnZoomScreen = GameObject.Find("Zoom Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
 
-            // ??
+            // Takes the x and y values of the players position and puts them inside the range 0 to 1, if the player is outside the screen the value is set to 0 or 1.
             playersPositionOnZoomScreen.y = Mathf.Clamp01(playersPositionOnZoomScreen.y);
             playersPositionOnZoomScreen.x = Mathf.Clamp01(playersPositionOnZoomScreen.x);
 
-            // ??
+            // Takes tha possibly new values and possibly changes the players position.
+            // Keeps the player inside the screen. The only time the player can reach the screen edge of the zoom camera is when a platform is so far to the left or right that the camera is positioned based on the screen width instead of based on the platforms position.
             transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnZoomScreen);
 
 
-            if (zoomCameraActiveAndFarLeft && playersPositionOnZoomScreen.x < 0)
+            // Stops the left motion if the player hits the boundry.
+            if (zoomCameraActiveAndFarLeft && playersPositionOnZoomScreen.x <= 0)
             {
-                transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnScreen);
+                playerRigidbody.velocity = new Vector3(0, playerRigidbody.velocity.y, 0);
             }
 
-            if (zoomCameraActiveAndFarRight && playersPositionOnZoomScreen.x > screenWidth)
+            // Stops the right motion if the player hits the boundry.
+            if (zoomCameraActiveAndFarRight && playersPositionOnZoomScreen.x >= screenWidthBoundary)
             {
-                transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnScreen);
+                playerRigidbody.velocity = new Vector3(0, playerRigidbody.velocity.y, 0);
+
             }
         }
     }
@@ -260,7 +251,7 @@ public class PlayerController : MonoBehaviour
     // Calculates both the vertical and horizontal direction and speed.
     private void CallculateDirectionAndSpeed()
     {
-        // TODO display the speed slower. Maybe it helps if I change the force? The movement should work a bit differently anyways.
+        // TODO display the speed slower? Maybe it helps if I change the force? The movement should work a bit differently anyways.
 
         // Calculating the vertical direction and speed.
         verticalDirection = Mathf.RoundToInt(playerRigidbody.velocity.y * 3.6f);
@@ -302,7 +293,7 @@ public class PlayerController : MonoBehaviour
     public void Crash()
     {
         GameObject.Find("Game Manager").GetComponent<GameManager>().FailedLandingScreen(true);
-        Destroy(gameObject);
+        DestroyLander();
         crashes++;
         gameActive = false;
     }
@@ -325,5 +316,10 @@ public class PlayerController : MonoBehaviour
     private void Altitude()
     {
         Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
+    }
+
+    private void DestroyLander()
+    {
+        Destroy(gameObject);
     }
 }

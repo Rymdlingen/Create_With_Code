@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    // Text fields.
     [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] TextMeshProUGUI timeText;
     [SerializeField] TextMeshProUGUI fuelText;
@@ -15,29 +16,34 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] TextMeshProUGUI successfulLandningText;
     [SerializeField] TextMeshProUGUI crashedText;
+    [SerializeField] TextMeshProUGUI outerSpaceText;
 
     [SerializeField] TextMeshProUGUI gameOverText;
 
+    // Amount of fuel the player starts with.
     private int fuelLeft = 3000;
+
+    // Timer variables.
     private int timer;
+    private string timeString;
     private int seconds = 0;
     private int minutes = 0;
     private bool minuteAdded = true;
-    public int oldTime;
-    float addTime;
+    private int oldTime;
+    private float addTime;
 
+    // Score variables.
     public int newPoints;
     private string newPointsString;
     private int score = 0;
     private string scoreString = "";
+
 
     public GameObject playerPrefab;
 
     public PlayerController playerControllerScript;
 
     private GameObject player;
-
-    string timeString;
 
     public MainMenu mainMenuScript;
 
@@ -93,6 +99,8 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
         }
+
+        DriftedOutInSpaceScreen(playerControllerScript.hasDrifteOutInSpace);
     }
 
     private void CalculateMinutesAndSeconds()
@@ -185,6 +193,7 @@ public class GameManager : MonoBehaviour
     public void ResetPlayer()
     {
         GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableMainCamera();
+        // TODO fix the hardcoded position.
         player = Instantiate(playerPrefab, new Vector3(-427, 147, -2), playerPrefab.transform.rotation);
         playerControllerScript = player.GetComponent<PlayerController>();
         player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0) * playerControllerScript.force * Time.deltaTime, ForceMode.Impulse);
@@ -216,6 +225,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DriftedOutInSpaceScreen(bool active)
+    {
+        outerSpaceText.SetText("The lander drifted out in outer space.");
+        GameObject.Find("Canvas").transform.Find("OuterSpace").gameObject.SetActive(active);
+    }
+
     private void EndScreen(bool active)
     {
         gameOverText.SetText("Game Over!\nYou had " + playerControllerScript.successfulLandings + " successful landings and you crashed " + playerControllerScript.crashes + " times.\n You scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
@@ -232,6 +247,7 @@ public class GameManager : MonoBehaviour
     {
         SuccessfulLandingScreen(false);
         FailedLandingScreen(false);
+        playerControllerScript.hasDrifteOutInSpace = false;
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
             Destroy(playerControllerScript.gameObject);
