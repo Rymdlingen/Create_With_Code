@@ -293,6 +293,17 @@ public class PlayerController : MonoBehaviour
     public void Crash()
     {
         GameObject.Find("Game Manager").GetComponent<GameManager>().FailedLandingScreen(true);
+
+        // TODO make nicer
+        if (mainCameraComponent.isActiveAndEnabled)
+        {
+            mainCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(1, 3);
+        }
+        else if (GameObject.Find("Zoom Camera").GetComponent<Camera>().isActiveAndEnabled)
+        {
+            GameObject.Find("Zoom Camera").GetComponent<ScreenShakeController>().ShakeScreen(1, 3);
+        }
+
         DestroyLander();
         crashes++;
         gameActive = false;

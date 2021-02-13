@@ -2351,6 +2351,7 @@ GameObject:
   - component: {fileID: 534669905}
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
+  - component: {fileID: 534669906}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2422,6 +2423,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &534669906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534669902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c4978a7680741d0a3655ba43019376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &609963139
 GameObject:
   m_ObjectHideFlags: 0
@@ -4126,9 +4139,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1138177417}
   - component: {fileID: 1138177416}
+  - component: {fileID: 1138177418}
   m_Layer: 0
   m_Name: Zoom Camera
-  m_TagString: Untagged
+  m_TagString: ZoomCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4189,6 +4203,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1138177418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138177415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77c4978a7680741d0a3655ba43019376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1227580099 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6882343331698093368, guid: 33fc2e7e460064ac2b3a270878d08c89,
