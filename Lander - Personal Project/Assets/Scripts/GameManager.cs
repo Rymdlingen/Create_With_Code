@@ -192,11 +192,21 @@ public class GameManager : MonoBehaviour
 
     public void ResetPlayer()
     {
-        GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableMainCamera();
-        // TODO fix the hardcoded position.
+        // Switch to main camera if zoom camera is active.
+        if (GameObject.Find("Zoom Camera").GetComponent<Camera>().isActiveAndEnabled)
+        {
+            GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableMainCamera();
+        }
+
+        // TODO fix the hardcoded position, needs to be based on screen size.
+        // Instantiate a new lander.
         player = Instantiate(playerPrefab, new Vector3(-427, 147, -2), playerPrefab.transform.rotation);
         playerControllerScript = player.GetComponent<PlayerController>();
+
+        // Add force to the player so it moves into the screen.
         player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0) * playerControllerScript.force * Time.deltaTime, ForceMode.Impulse);
+
+        // Set game to active.
         playerControllerScript.gameActive = true;
     }
 

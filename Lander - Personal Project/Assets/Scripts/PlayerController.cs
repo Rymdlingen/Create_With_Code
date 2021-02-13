@@ -42,6 +42,9 @@ public class PlayerController : MonoBehaviour
     private FollowPlayer followPlayerScript;
     private GameManager gameManagerScript;
 
+    //Rotate the lander to upright position.
+    private float rotationTimeRemaining;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +65,13 @@ public class PlayerController : MonoBehaviour
     {
         // Calculates the distance between the lander and the ground directly below.
         Altitude();
+
+        // Rotate the lander to upright position if landed at an angle
+        if (rotationTimeRemaining > 0)
+        {
+            transform.rotation = new Quaternion(0, 0, Mathf.MoveTowardsAngle(transform.rotation.z, 0, Time.deltaTime), transform.rotation.w);
+            rotationTimeRemaining = Mathf.MoveTowards(rotationTimeRemaining, 0, Time.deltaTime);
+        }
     }
 
     // Update is called once per frame
@@ -219,12 +229,12 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // If the player collides with the ground they lose and get destroyed.
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") && gameActive)
         {
             Crash();
         }
 
-        if (collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Platform") && gameActive)
         {
             // If the player is not paralell with the platform when landing, they lose.
             // If the player is falling to fast into the platform, they lose.
@@ -313,8 +323,6 @@ public class PlayerController : MonoBehaviour
     public void Landed(float verticalSpeed, float horizontalSpeed)
     {
         // TODO change so it freezes if good landing and bounces/gets into upright position if hard landning.
-        // Freeze the players position when landed.
-        StopPlayer();
 
         bool rotatedToMuch = transform.rotation.eulerAngles.z < 360 - oneRotation + 1 && transform.rotation.eulerAngles.z > oneRotation - 1;
 
@@ -323,11 +331,28 @@ public class PlayerController : MonoBehaviour
         {
             // Hard landing.
             basePoints = 15;
+            // If the lander lands at an angle, start the rotation timer by setting it to 1 second.
+            if (transform.rotation.z != 0)
+            {
+                rotationTimeRemaining = 1;
+            }
+
+            playerRigidbody.constraints = RigidbodyConstraints.FreezePositionX;
+            //playerRigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
+            //playerRigidbody.constraints = RigidbodyConstraints.FreezeRotationX;
+            playerRigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
+
+            BounceLander();
+            //StopPlayer();
+
             // Activate small screen shake on the active camera.
-            ScreenShake(0.5f, 1);
+            ScreenShake(0.3f, 0.5f);
         }
         else
         {
+            // Freeze the players position when landed.
+            StopPlayer();
+
             // Soft landing.
             basePoints = 50;
         }
@@ -354,5 +379,12 @@ public class PlayerController : MonoBehaviour
         {
             zoomCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(duration, power);
         }
+    }
+
+    private void BounceLander()
+    {
+
+        playerRigidbody.velocity = Vector3.zero;
+        playerRigidbody.AddForce(Vector3.up, ForceMode.Impulse);
     }
 }

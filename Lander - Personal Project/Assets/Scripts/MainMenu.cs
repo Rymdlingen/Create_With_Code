@@ -9,13 +9,11 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadScene("Lander");
-        //GameObject.Find("Game Manager").GetComponent<GameManager>().oldTime = Mathf.RoundToInt(Time.realtimeSinceStartup);
     }
 
     // Activated by pressing the quit button in the main menu.
     public void QuitGame()
     {
-        Debug.Log("Quit!");
         Application.Quit();
     }
 

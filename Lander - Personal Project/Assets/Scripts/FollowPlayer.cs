@@ -27,7 +27,6 @@ public class FollowPlayer : MonoBehaviour
     void Start()
     {
         zoomCameraXPositionRange = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x - Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x / 3;
-        Debug.Log(zoomCameraXPositionRange);
     }
 
     // Update is called once per frame.
