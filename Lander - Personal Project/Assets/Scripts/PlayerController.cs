@@ -7,8 +7,6 @@ public class PlayerController : MonoBehaviour
     // Public variables.
     public float force;
     public bool gameActive = true;
-    public GameObject mainCamera;
-    public Camera mainCameraComponent;
     public float verticalSpeed;
     public float horizontalSpeed;
     public string verticalArrow;
@@ -28,17 +26,21 @@ public class PlayerController : MonoBehaviour
 
     // Private variables.
     private Rigidbody playerRigidbody;
+    private Camera mainCameraComponent;
+    private Camera zoomCameraComponent;
     // For rotating.
     private float rotationInput;
     private float rotationAngle;
     private bool hasRotated = false;
     private float rotationCoolDown = 0.25f;
     private float rotationCoolDownCounter;
+    private float oneRotation = 11.25f;
     // For calculating the direction.
     private float verticalDirection;
     private float horizontalDirection;
 
-    FollowPlayer followPlayerScript;
+    private FollowPlayer followPlayerScript;
+    private GameManager gameManagerScript;
 
     // Start is called before the first frame update
     void Start()
@@ -46,11 +48,13 @@ public class PlayerController : MonoBehaviour
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
 
-        mainCamera = GameObject.Find("Main Camera");
+        mainCameraComponent = GameObject.Find("Main Camera").GetComponent<Camera>();
 
-        mainCameraComponent = mainCamera.GetComponent<Camera>();
+        zoomCameraComponent = GameObject.Find("Zoom Camera").GetComponent<Camera>();
 
         followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
+
+        gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
 
@@ -100,13 +104,13 @@ public class PlayerController : MonoBehaviour
         if (rotationCoolDownCounter < 0 && rotationInput < 0 && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
         {
             // Rotation to the left.
-            rotationAngle = -11.25f;
+            rotationAngle = -oneRotation;
             hasRotated = true;
         }
         else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 91))
         {
             // Rotation to the right.
-            rotationAngle = 11.25f;
+            rotationAngle = oneRotation;
             hasRotated = true;
         }
         else
@@ -163,7 +167,7 @@ public class PlayerController : MonoBehaviour
         int screenWidthBoundary = Screen.width + screenBoundaryBuffert;
 
         // Players position in screen points (pixels).
-        Vector3 playersPositionOnScreen = mainCamera.GetComponent<Camera>().WorldToScreenPoint(transform.position);
+        Vector3 playersPositionOnScreen = mainCameraComponent.WorldToScreenPoint(transform.position);
 
         // When the main camera is active, this checks if the lander drifts out in space.
         if (mainCameraComponent.isActiveAndEnabled == true)
@@ -224,7 +228,10 @@ public class PlayerController : MonoBehaviour
         {
             // If the player is not paralell with the platform when landing, they lose.
             // If the player is falling to fast into the platform, they lose.
-            if (transform.rotation.z < -0.1 || transform.rotation.z > 0.1 || verticalSpeed > 35 || horizontalSpeed > 31)
+
+            bool rotatedToMuch = transform.rotation.eulerAngles.z < 360 - oneRotation * 2 + 1 && transform.rotation.eulerAngles.z > oneRotation * 2 - 1;
+
+            if (rotatedToMuch || verticalSpeed > 35 || horizontalSpeed > 31)
             {
                 Crash();
             }
@@ -292,34 +299,36 @@ public class PlayerController : MonoBehaviour
 
     public void Crash()
     {
-        GameObject.Find("Game Manager").GetComponent<GameManager>().FailedLandingScreen(true);
-
-        // TODO make nicer
-        if (mainCameraComponent.isActiveAndEnabled)
-        {
-            mainCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(1, 3);
-        }
-        else if (GameObject.Find("Zoom Camera").GetComponent<Camera>().isActiveAndEnabled)
-        {
-            GameObject.Find("Zoom Camera").GetComponent<ScreenShakeController>().ShakeScreen(1, 3);
-        }
+        // Activate the failed landning screen.
+        gameManagerScript.FailedLandingScreen(true);
 
         DestroyLander();
         crashes++;
         gameActive = false;
+
+        // Activate screen shake on the active camera.
+        ScreenShake(1, 3);
     }
 
     public void Landed(float verticalSpeed, float horizontalSpeed)
     {
+        // TODO change so it freezes if good landing and bounces/gets into upright position if hard landning.
         // Freeze the players position when landed.
         StopPlayer();
 
-        if (verticalSpeed > 15 || horizontalSpeed > 15)
+        bool rotatedToMuch = transform.rotation.eulerAngles.z < 360 - oneRotation + 1 && transform.rotation.eulerAngles.z > oneRotation - 1;
+
+        // Decide on base points for the landing dependning on the speed and angle of the landing.
+        if (verticalSpeed > 15 || horizontalSpeed > 15 || rotatedToMuch)
         {
+            // Hard landing.
             basePoints = 15;
+            // Activate small screen shake on the active camera.
+            ScreenShake(0.5f, 1);
         }
         else
         {
+            // Soft landing.
             basePoints = 50;
         }
     }
@@ -332,5 +341,18 @@ public class PlayerController : MonoBehaviour
     private void DestroyLander()
     {
         Destroy(gameObject);
+    }
+
+    private void ScreenShake(float duration, float power)
+    {
+        // Activate screen shake on the active camera.
+        if (mainCameraComponent.isActiveAndEnabled)
+        {
+            mainCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(duration, power);
+        }
+        else if (zoomCameraComponent.isActiveAndEnabled)
+        {
+            zoomCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(duration, power);
+        }
     }
 }

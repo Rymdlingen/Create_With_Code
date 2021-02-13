@@ -19,10 +19,6 @@ public class ScreenShakeController : MonoBehaviour
     {
         // The starting position of the main camera, used to reset after shake.
         mainCameraStartPosition = transform.position;
-
-        // TODO didnt work
-        useMethod = this;
-
     }
 
     // Update is called once per frame
@@ -57,7 +53,7 @@ public class ScreenShakeController : MonoBehaviour
                 transform.position = mainCameraStartPosition;
             }
 
-            // Turn of the shake.
+            // The camera is repositioned and reset is changed to false.
             resetCameraAfterShake = false;
         }
 
