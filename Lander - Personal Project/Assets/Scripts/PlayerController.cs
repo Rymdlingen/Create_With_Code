@@ -42,6 +42,8 @@ public class PlayerController : MonoBehaviour
     private FollowPlayer followPlayerScript;
     private GameManager gameManagerScript;
 
+    public ParticleSystem[] landerFire;
+
     //Rotate the lander to upright position.
     private float rotationTimeRemaining;
 
@@ -58,6 +60,9 @@ public class PlayerController : MonoBehaviour
         followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
 
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
+
+        // TODO how to get the particles? when instantiating new player? Use the use fuel bool and activate in another script?
+        //landerFire = Gam
     }
 
 
@@ -143,6 +148,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetAxis("Jump") > 0)
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
+
             usingFuel = true;
         }
         else
@@ -337,6 +343,7 @@ public class PlayerController : MonoBehaviour
                 rotationTimeRemaining = 1;
             }
 
+            // TODO
             playerRigidbody.constraints = RigidbodyConstraints.FreezePositionX;
             //playerRigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
             //playerRigidbody.constraints = RigidbodyConstraints.FreezeRotationX;
