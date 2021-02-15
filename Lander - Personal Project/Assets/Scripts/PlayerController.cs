@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-
+            usingFuel = false;
         }
 
         // Calculate and display direction and speed of lander.
@@ -235,12 +235,12 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // If the player collides with the ground they lose and get destroyed.
-        if (collision.gameObject.CompareTag("Ground") && gameActive)
+        if (collision.gameObject.CompareTag("Ground"))
         {
             Crash();
         }
 
-        if (collision.gameObject.CompareTag("Platform") && gameActive)
+        if (collision.gameObject.CompareTag("Platform"))
         {
             // If the player is not paralell with the platform when landing, they lose.
             // If the player is falling to fast into the platform, they lose.
@@ -320,6 +320,7 @@ public class PlayerController : MonoBehaviour
 
         DestroyLander();
         crashes++;
+        usingFuel = false;
         gameActive = false;
 
         // Activate screen shake on the active camera.
@@ -363,6 +364,8 @@ public class PlayerController : MonoBehaviour
             // Soft landing.
             basePoints = 50;
         }
+
+        usingFuel = false;
     }
 
     private void Altitude()

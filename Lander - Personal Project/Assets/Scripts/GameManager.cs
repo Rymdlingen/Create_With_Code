@@ -170,7 +170,7 @@ public class GameManager : MonoBehaviour
             playerControllerScript.addFuel = false;
         }
 
-        if (playerControllerScript.usingFuel && playerControllerScript.gameActive == true && fuelLeft > 0)
+        if (playerControllerScript.usingFuel && fuelLeft > 0)
         {
             fuelLeft -= 1;
         }
@@ -210,24 +210,34 @@ public class GameManager : MonoBehaviour
         playerControllerScript.gameActive = true;
     }
 
+    // METHODS THAT CHANGE WHAT TEXT IS DISPLAYED ON SCRREN.
+
+    // Change text on screen.
     public void SuccessfulLandingScreen(bool active)
     {
+        // Successful landings can only happen if the player has fuel left.
         if (fuelLeft > 0)
         {
             if (playerControllerScript.basePoints == 15)
             {
+                // Text for hard landing.
                 successfulLandningText.SetText("You landed hard\nCommunication system destroyed\n" + newPointsString + " points");
             }
             else
             {
+                // Text for soft landing.
                 successfulLandningText.SetText("Congratulations!\nThat was a great landing\n" + newPointsString + " points");
             }
+
+            // Display the text and button.
             GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject.SetActive(active);
         }
     }
 
+    // Change text on screen.
     public void FailedLandingScreen(bool active)
     {
+        // Only display this screen if the player has fuel left, if the player has no fuel left the game over screen will be displayed instead.
         if (fuelLeft > 0)
         {
             crashedText.SetText("You just destroyed a 100 megabuck lander");
@@ -235,12 +245,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Change text on screen.
     public void DriftedOutInSpaceScreen(bool active)
     {
         outerSpaceText.SetText("The lander drifted out in outer space.");
         GameObject.Find("Canvas").transform.Find("OuterSpace").gameObject.SetActive(active);
     }
 
+    // Change text on screen.
     private void EndScreen(bool active)
     {
         gameOverText.SetText("Game Over!\nYou had " + playerControllerScript.successfulLandings + " successful landings and you crashed " + playerControllerScript.crashes + " times.\n You scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
@@ -248,25 +260,33 @@ public class GameManager : MonoBehaviour
         GameObject.Find("Canvas").transform.Find("GameOver").gameObject.SetActive(active);
     }
 
-    public void BackToMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
 
+
+    // This happens if a button is pressed that makes the game continue.
     public void ContinueButton()
     {
+        // Reset screens and losing condition.
         SuccessfulLandingScreen(false);
         FailedLandingScreen(false);
         playerControllerScript.hasDrifteOutInSpace = false;
+
+        // Destroy the lander if it wasn't destroyed for some reason ( successful landing is a reason).
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
             Destroy(playerControllerScript.gameObject);
         }
+
+        // Spawn a new lander.
         ResetPlayer();
     }
 
     private void MakePlayerFall()
     {
         playerControllerScript.OutOfFuel();
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }
