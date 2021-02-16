@@ -76,6 +76,10 @@ public class PlayerController : MonoBehaviour
         {
             transform.rotation = new Quaternion(0, 0, Mathf.MoveTowardsAngle(transform.rotation.z, 0, Time.deltaTime), transform.rotation.w);
             rotationTimeRemaining = Mathf.MoveTowards(rotationTimeRemaining, 0, Time.deltaTime);
+            if (rotationTimeRemaining <= 0)
+            {
+                StopPlayer();
+            }
         }
     }
 
@@ -235,12 +239,12 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // If the player collides with the ground they lose and get destroyed.
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") && (gameActive || gameManagerScript.fuelLeft < 1))
         {
             Crash();
         }
 
-        if (collision.gameObject.CompareTag("Platform"))
+        if (collision.gameObject.CompareTag("Platform") && (gameActive || gameManagerScript.fuelLeft < 1))
         {
             // If the player is not paralell with the platform when landing, they lose.
             // If the player is falling to fast into the platform, they lose.
@@ -365,6 +369,7 @@ public class PlayerController : MonoBehaviour
             basePoints = 50;
         }
 
+        gameActive = false;
         usingFuel = false;
     }
 

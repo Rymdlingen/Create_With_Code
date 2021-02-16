@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameOverText;
 
     // Amount of fuel the player starts with.
-    private int fuelLeft = 3000;
+    public int fuelLeft = 3000;
 
     // Timer variables.
     private int timer;
@@ -202,6 +202,9 @@ public class GameManager : MonoBehaviour
         // Instantiate a new lander.
         player = Instantiate(playerPrefab, new Vector3(-427, 147, -2), playerPrefab.transform.rotation);
         playerControllerScript = player.GetComponent<PlayerController>();
+
+        LanderParticles particlesScript = player.transform.Find("Lander Fire Particles").GetComponent<LanderParticles>();
+        particlesScript.newLander = true;
 
         // Add force to the player so it moves into the screen.
         player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0) * playerControllerScript.force * Time.deltaTime, ForceMode.Impulse);

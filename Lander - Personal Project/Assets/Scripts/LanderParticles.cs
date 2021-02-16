@@ -9,31 +9,44 @@ public class LanderParticles : MonoBehaviour
 
     private RaycastHit hit;
     private GameObject particleSpreadOnGround;
+    private ParticleSystem dustParticles;
+
+    public bool newLander;
 
     // Start is called before the first frame update
     void Start()
     {
-        particleSpreadOnGround = GameObject.Find("Fire on ground").gameObject;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        PlaceParticleSpreadOnGround();
-        Debug.DrawLine(transform.position, hit.point, Color.cyan, 5f);
-
-        if (playerControllerScript.usingFuel)
+        if (newLander)
         {
-            foreach (ParticleSystem particle in fireParticles)
-            {
-                particle.Play();
-            }
+            particleSpreadOnGround = GameObject.Find("Fire on ground").gameObject;
+            dustParticles = GameObject.Find("Dust particles").GetComponent<ParticleSystem>();
+            newLander = false;
         }
-        else
+
+        if (GameObject.FindGameObjectWithTag("Player"))
         {
-            foreach (ParticleSystem particle in fireParticles)
+            PlaceParticleSpreadOnGround();
+
+
+            if (playerControllerScript.usingFuel)
             {
-                particle.Stop();
+                foreach (ParticleSystem particle in fireParticles)
+                {
+                    particle.Play();
+                }
+            }
+            else
+            {
+                foreach (ParticleSystem particle in fireParticles)
+                {
+                    particle.Stop();
+                }
             }
         }
     }
@@ -41,17 +54,27 @@ public class LanderParticles : MonoBehaviour
     private void PlaceParticleSpreadOnGround()
     {
         Vector3 localDown = transform.TransformDirection(Vector3.down);
-        Physics.Raycast(transform.position, localDown, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
+        bool hitFound = Physics.Raycast(transform.position - localDown * 10, localDown, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
+        Debug.DrawLine(transform.position - localDown * 10, hit.point, Color.cyan, 5f);
 
-        if (hit.distance < 15)
+        if (hitFound && hit.distance < 25)
         {
-            float yOffset = hit.transform.lossyScale.y / 2;
-            particleSpreadOnGround.transform.position = new Vector3(transform.position.x, hit.transform.position.y + yOffset, transform.position.z);
+            particleSpreadOnGround.transform.position = new Vector3(hit.point.x, hit.point.y, transform.position.z);
             particleSpreadOnGround.transform.rotation = hit.transform.rotation;
+
+            if (playerControllerScript.usingFuel)
+            {
+                dustParticles.Play();
+            }
+            else
+            {
+                dustParticles.Stop();
+            }
         }
         else
         {
             particleSpreadOnGround.transform.position = new Vector3(transform.position.x, transform.position.y - 30, transform.position.z);
+            dustParticles.Stop();
         }
     }
 }
