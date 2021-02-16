@@ -12,13 +12,13 @@ public class ScreenShakeController : MonoBehaviour
 
     private bool resetCameraAfterShake = false;
 
-    private Vector3 mainCameraStartPosition;
+    private Vector3 sceneCameraStartPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        // The starting position of the main camera, used to reset after shake.
-        mainCameraStartPosition = transform.position;
+        // The starting position of the scene camera, used to reset after shake.
+        sceneCameraStartPosition = transform.position;
     }
 
     // Update is called once per frame
@@ -47,10 +47,10 @@ public class ScreenShakeController : MonoBehaviour
         }
         else if (resetCameraAfterShake)
         {
-            // Reset the main cameras position if it is changed. (The zoom camera resets in the FollowPlayer script)
-            if (gameObject.CompareTag("MainCamera") && gameObject.GetComponent<Camera>().isActiveAndEnabled && transform.position != mainCameraStartPosition)
+            // Reset the scene cameras position if it is changed. (The zoom camera resets in the FollowPlayer script)
+            if (gameObject.CompareTag("SceneCamera") && gameObject.GetComponent<Camera>().isActiveAndEnabled && transform.position != sceneCameraStartPosition)
             {
-                transform.position = mainCameraStartPosition;
+                transform.position = sceneCameraStartPosition;
             }
 
             // The camera is repositioned and reset is changed to false.

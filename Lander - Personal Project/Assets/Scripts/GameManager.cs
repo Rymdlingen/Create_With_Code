@@ -192,10 +192,10 @@ public class GameManager : MonoBehaviour
 
     public void ResetPlayer()
     {
-        // Switch to main camera if zoom camera is active.
+        // Switch to scene camera if zoom camera is active.
         if (GameObject.Find("Zoom Camera").GetComponent<Camera>().isActiveAndEnabled)
         {
-            GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableMainCamera();
+            GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableSceneCamera();
         }
 
         // TODO fix the hardcoded position, needs to be based on screen size.

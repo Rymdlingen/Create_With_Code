@@ -6,18 +6,19 @@ public class FollowPlayer : MonoBehaviour
 {
     // Public variables.
     public GameObject player;
-    public Camera mainCamera;
+    public Camera sceneCamera;
     public Camera zoomCamera;
 
-    float zoomCameraMinDistanceToPlatform = 40.0f;
-    float zoomCameraOffset = 55;
+    private float zoomCameraMinDistanceToPlatform = 40.0f;
+    private float zoomCameraOffset = 55;
 
-    Vector3 latestPlatformPosition;
-    float zoomCameraMinY;
-    float zoomCameraXPositionRange = 260;
+    private Vector3 latestPlatformPosition;
+    private float zoomCameraMinY;
+    public float zoomCameraXPositionRange;
 
     // Private variables.
     private PlayerController playerControllerScript;
+    private Canvas canvas;
 
     public bool zoom = false;
 
@@ -26,12 +27,15 @@ public class FollowPlayer : MonoBehaviour
     // Start is called before the first frame update.
     void Start()
     {
-        zoomCameraXPositionRange = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x - Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x / 3;
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
     }
 
     // Update is called once per frame.
     void Update()
     {
+        zoomCameraXPositionRange = sceneCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x - sceneCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x / 3;
+        Debug.Log(zoomCameraXPositionRange);
+
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
             playerControllerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
@@ -69,13 +73,13 @@ public class FollowPlayer : MonoBehaviour
 
         if (transform.position.y - latestPlatformPosition.y > 130)
         {
-            // Switches back to the main camera.
-            EnableMainCamera();
+            // Switches back to the scene camera.
+            EnableSceneCamera();
         }
         else if (latestPlatformPosition.x - transform.position.x > 100 || latestPlatformPosition.x - transform.position.x < -100)
         {
-            // Switches back to the main camera.
-            EnableMainCamera();
+            // Switches back to the scene camera.
+            EnableSceneCamera();
         }
 
     }
@@ -93,17 +97,21 @@ public class FollowPlayer : MonoBehaviour
         }
     }
 
-    public void EnableMainCamera()
+    public void EnableSceneCamera()
     {
-        mainCamera.enabled = true;
+        sceneCamera.enabled = true;
         zoomCamera.enabled = false;
+        // Change the canvas render camera to scene camera.
+        canvas.worldCamera = sceneCamera;
         zoom = false;
     }
 
     private void EnableZoomCamera()
     {
-        mainCamera.enabled = false;
+        sceneCamera.enabled = false;
         zoomCamera.enabled = true;
+        // Change the canvas render camera to zoom camera.
+        canvas.worldCamera = zoomCamera;
         zoom = true;
     }
 }

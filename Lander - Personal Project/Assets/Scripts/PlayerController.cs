@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
 
     // Private variables.
     private Rigidbody playerRigidbody;
-    private Camera mainCameraComponent;
+    private Camera sceneCameraComponent;
     private Camera zoomCameraComponent;
     // For rotating.
     private float rotationInput;
@@ -53,7 +53,7 @@ public class PlayerController : MonoBehaviour
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
 
-        mainCameraComponent = GameObject.Find("Main Camera").GetComponent<Camera>();
+        sceneCameraComponent = GameObject.Find("Scene Camera").GetComponent<Camera>();
 
         zoomCameraComponent = GameObject.Find("Zoom Camera").GetComponent<Camera>();
 
@@ -174,7 +174,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // Looks if the players position is on the screen or not.
-    // Constrains the player inside the zoom camera area if necessary and tells the game manager if the lander drifts out in space from the main camera.
+    // Constrains the player inside the zoom camera area if necessary and tells the game manager if the lander drifts out in space from the scene camera.
     void CheckPlayerPosition()
     {
         // Screen boundaries in pixels (+ buffert for the size of the lander).
@@ -183,10 +183,10 @@ public class PlayerController : MonoBehaviour
         int screenWidthBoundary = Screen.width + screenBoundaryBuffert;
 
         // Players position in screen points (pixels).
-        Vector3 playersPositionOnScreen = mainCameraComponent.WorldToScreenPoint(transform.position);
+        Vector3 playersPositionOnScreen = sceneCameraComponent.WorldToScreenPoint(transform.position);
 
-        // When the main camera is active, this checks if the lander drifts out in space.
-        if (mainCameraComponent.isActiveAndEnabled == true)
+        // When the scene camera is active, this checks if the lander drifts out in space.
+        if (sceneCameraComponent.isActiveAndEnabled == true)
         {
             // When the lander is spawned it is to the left of the screen, moving to the right. 
             if (playersPositionOnScreen.x < 0 && playerRigidbody.velocity.x > 0)
@@ -381,9 +381,9 @@ public class PlayerController : MonoBehaviour
     private void ScreenShake(float duration, float power)
     {
         // Activate screen shake on the active camera.
-        if (mainCameraComponent.isActiveAndEnabled)
+        if (sceneCameraComponent.isActiveAndEnabled)
         {
-            mainCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(duration, power);
+            sceneCameraComponent.GetComponent<ScreenShakeController>().ShakeScreen(duration, power);
         }
         else if (zoomCameraComponent.isActiveAndEnabled)
         {
