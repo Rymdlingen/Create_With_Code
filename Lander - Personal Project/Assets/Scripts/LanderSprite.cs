@@ -41,7 +41,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[0];
+                spriteRenderer.sprite = smallLanderRotations[0];
             }
         }
 
@@ -54,7 +54,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[1];
+                spriteRenderer.sprite = smallLanderRotations[1];
             }
         }
 
@@ -67,7 +67,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[2];
+                spriteRenderer.sprite = smallLanderRotations[2];
             }
         }
 
@@ -80,7 +80,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[3];
+                spriteRenderer.sprite = smallLanderRotations[3];
             }
         }
 
@@ -93,7 +93,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[4];
+                spriteRenderer.sprite = smallLanderRotations[4];
             }
         }
 
@@ -106,7 +106,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[5];
+                spriteRenderer.sprite = smallLanderRotations[5];
             }
         }
 
@@ -119,7 +119,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[6];
+                spriteRenderer.sprite = smallLanderRotations[6];
             }
         }
 
@@ -132,7 +132,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[7];
+                spriteRenderer.sprite = smallLanderRotations[7];
             }
         }
 
@@ -145,7 +145,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[8];
+                spriteRenderer.sprite = smallLanderRotations[8];
             }
         }
 
@@ -158,7 +158,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[9];
+                spriteRenderer.sprite = smallLanderRotations[9];
             }
         }
 
@@ -171,7 +171,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[10];
+                spriteRenderer.sprite = smallLanderRotations[10];
             }
         }
 
@@ -184,7 +184,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[11];
+                spriteRenderer.sprite = smallLanderRotations[11];
             }
         }
 
@@ -197,7 +197,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[12];
+                spriteRenderer.sprite = smallLanderRotations[12];
             }
         }
 
@@ -210,7 +210,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[13];
+                spriteRenderer.sprite = smallLanderRotations[13];
             }
         }
 
@@ -223,7 +223,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[14];
+                spriteRenderer.sprite = smallLanderRotations[14];
             }
         }
 
@@ -236,7 +236,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[15];
+                spriteRenderer.sprite = smallLanderRotations[15];
             }
         }
 
@@ -249,7 +249,7 @@ public class LanderSprite : MonoBehaviour
             }
             else
             {
-                // spriteRenderer.sprite = smallLanderRotations[16];
+                spriteRenderer.sprite = smallLanderRotations[16];
             }
         }
     }
