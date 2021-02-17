@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2219845672552531496}
   - component: {fileID: 1278099769545185553}
   m_Layer: 0
-  m_Name: GameObject (14)
+  m_Name: RockCollider (14)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 3648473537237640811}
   - component: {fileID: 1686329469174602323}
   m_Layer: 0
-  m_Name: GameObject (13)
+  m_Name: RockCollider (13)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 5978399810179380973}
   - component: {fileID: 6678356816949750487}
   m_Layer: 0
-  m_Name: GameObject (15)
+  m_Name: RockCollider (15)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143,7 +143,7 @@ GameObject:
   - component: {fileID: 5907783105558582283}
   - component: {fileID: 4484973565625671484}
   m_Layer: 0
-  m_Name: GameObject (17)
+  m_Name: RockCollider (17)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 6906171750395794779}
   - component: {fileID: 9025333874152059150}
   m_Layer: 0
-  m_Name: GameObject (11)
+  m_Name: RockCollider (11)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 2187261646602965353}
   - component: {fileID: 3588729488367490172}
   m_Layer: 0
-  m_Name: GameObject (18)
+  m_Name: RockCollider (18)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 2840356524584444061}
   - component: {fileID: 4329549983680753030}
   m_Layer: 0
-  m_Name: GameObject (16)
+  m_Name: RockCollider (16)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -407,7 +407,7 @@ GameObject:
   - component: {fileID: 7400826268382286361}
   - component: {fileID: 2260168892956760977}
   m_Layer: 0
-  m_Name: GameObject (19)
+  m_Name: RockCollider (19)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -451,7 +451,7 @@ GameObject:
   - component: {fileID: 4200448647439913420}
   - component: {fileID: 6185299635732125980}
   m_Layer: 0
-  m_Name: GameObject (12)
+  m_Name: RockCollider (12)
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

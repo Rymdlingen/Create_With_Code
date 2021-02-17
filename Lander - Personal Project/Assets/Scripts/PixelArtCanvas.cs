@@ -28,15 +28,12 @@ public class PixelArtCanvas : CanvasScaler
 
     public void Recalculate()
     {
-        // Calculate the zoom cameras x range.
-        //followPlayerScript.zoomCameraXPositionRange = 
-
         var currentScreenSize = new Vector2(Screen.width, Screen.height);
 
         // We need to be able to display at least 320 x 180 screen (16:9).
-        var safeAreaSize = new Vector2(320, 180);
+        var safeAreaSize = new Vector2(260, 150);
 
-        var safeAreaWorldHeight = 250f;
+        var safeAreaWorldHeight = safeAreaSize.y * 3f;
 
         // Find the biggest scale that still shows the whole safe area.
         int scale = 1;
@@ -50,8 +47,8 @@ public class PixelArtCanvas : CanvasScaler
         // Create the new render texture.
         Vector2Int renderTargetSize = new Vector2Int
         {
-            x = Mathf.CeilToInt(currentScreenSize.x / scale),
-            y = Mathf.CeilToInt(currentScreenSize.y / scale)
+            x = Mathf.CeilToInt(currentScreenSize.x / scale / 2) * 2,
+            y = Mathf.CeilToInt(currentScreenSize.y / scale / 2) * 2
         };
         // Debug.Log("Rendering to target size:");
         // Debug.Log(renderTargetSize);
@@ -72,14 +69,14 @@ public class PixelArtCanvas : CanvasScaler
         {
             sceneCamera.targetTexture = renderTexture;
             // Change camera settings.
-            sceneCamera.orthographicSize = safeAreaWorldHeight / safeAreaSize.y * renderTargetSize.y;
+            sceneCamera.orthographicSize = safeAreaWorldHeight / safeAreaSize.y * renderTargetSize.y / 2;
         }
 
         if (zoomCamera)
         {
             zoomCamera.targetTexture = renderTexture;
             // Change camera settings.
-            zoomCamera.orthographicSize = safeAreaWorldHeight / safeAreaSize.y * renderTargetSize.y / 3;
+            zoomCamera.orthographicSize = safeAreaWorldHeight / safeAreaSize.y * renderTargetSize.y / 6;
         }
 
 
@@ -91,7 +88,7 @@ public class PixelArtCanvas : CanvasScaler
 
         // Resize the display camera viewport.
         Camera displayCamera = GameObject.Find("Display Camera").GetComponent<Camera>();
-        displayCamera.orthographicSize = Screen.height / scale / 2;
+        displayCamera.orthographicSize = (float)Screen.height / scale / 2;
 
         // Resize the canvas scale.
         this.scaleFactor = scale;

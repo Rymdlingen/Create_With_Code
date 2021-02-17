@@ -126,7 +126,7 @@ public class PlayerController : MonoBehaviour
             rotationAngle = -oneRotation;
             hasRotated = true;
         }
-        else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 91))
+        else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 271 || transform.rotation.eulerAngles.z < 91))
         {
             // Rotation to the right.
             rotationAngle = oneRotation;
