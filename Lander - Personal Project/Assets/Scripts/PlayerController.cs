@@ -120,13 +120,13 @@ public class PlayerController : MonoBehaviour
         }
 
         // Rotates player 11.25 degrees to the left or right based on input, max rotation is 90 degrees left or right.
-        if (rotationCoolDownCounter < 0 && rotationInput < 0 && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 269))
+        if (rotationCoolDownCounter < 0 && rotationInput < 0 && (transform.rotation.eulerAngles.z < 90 || transform.rotation.eulerAngles.z > 180))
         {
             // Rotation to the left.
             rotationAngle = -oneRotation;
             hasRotated = true;
         }
-        else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 271 || transform.rotation.eulerAngles.z < 91))
+        else if (rotationCoolDownCounter < 0 && rotationInput > 0 && (transform.rotation.eulerAngles.z > 270 || transform.rotation.eulerAngles.z < 180))
         {
             // Rotation to the right.
             rotationAngle = oneRotation;

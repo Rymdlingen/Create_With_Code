@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
         DisplayTime();
         CalculateFuel();
 
-        altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 10));
+        altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 8));
         horizontalSpeedText.SetText("Horizontal speed " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
         verticalSpeedText.SetText("Vertical speed " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
 
