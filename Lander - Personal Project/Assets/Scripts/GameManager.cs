@@ -72,9 +72,9 @@ public class GameManager : MonoBehaviour
         DisplayTime();
         CalculateFuel();
 
-        altitudeText.SetText("Altitude " + Mathf.RoundToInt(playerControllerScript.hit.distance - 8));
-        horizontalSpeedText.SetText("Horizontal speed " + playerControllerScript.horizontalSpeed + "  " + playerControllerScript.horizontalArrow);
-        verticalSpeedText.SetText("Vertical speed " + playerControllerScript.verticalSpeed + "  " + playerControllerScript.verticalArrow);
+        altitudeText.SetText(Mathf.RoundToInt(playerControllerScript.hit.distance - 8).ToString());
+        horizontalSpeedText.SetText(playerControllerScript.horizontalSpeed.ToString());
+        verticalSpeedText.SetText(playerControllerScript.verticalSpeed.ToString());
 
         if (playerControllerScript.basePoints > 0)
         {
@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
     public void DisplayTime()
     {
         // Change the displayed time.
-        timeText.SetText("Time " + timeString);
+        timeText.SetText(timeString);
     }
 
     private void CalculateScore()
@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour
 
         scoreString = MakeFourCharString(score.ToString(), '0');
 
-        scoreText.SetText("Score " + scoreString);
+        scoreText.SetText(scoreString);
     }
 
     private void CalculateFuel()
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
             fuelLeft -= 1;
         }
 
-        fuelText.SetText("Fuel " + MakeFourCharString(fuelLeft.ToString(), '0'));
+        fuelText.SetText(MakeFourCharString(fuelLeft.ToString(), '0'));
     }
 
     private string MakeFourCharString(string originalString, char fillerChar)

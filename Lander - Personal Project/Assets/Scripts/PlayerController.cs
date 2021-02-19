@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
 
     public ParticleSystem[] landerFire;
 
+    public Sprite[] arrows;
+
     //Rotate the lander to upright position.
     private float rotationTimeRemaining;
 
@@ -291,29 +293,35 @@ public class PlayerController : MonoBehaviour
         // Depending on the vertical direction different arrows are displayed.
         if (verticalSpeed == 0)
         {
-            verticalArrow = " ";
+            GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = null;
+            // verticalArrow = " ";
         }
         else if (verticalDirection > 0)
         {
-            verticalArrow = "↑";
+            GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = arrows[0];
+            // verticalArrow = "↑";
         }
         else if (verticalDirection < 0)
         {
-            verticalArrow = "↓";
+            GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = arrows[1];
+            // verticalArrow = "↓";
         }
 
         // Depending on the horizontal direction different arrows are displayed.
         if (horizontalSpeed == 0)
         {
-            horizontalArrow = " ";
+            GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = null;
+            //horizontalArrow = " ";
         }
         else if (horizontalDirection > 0)
         {
-            horizontalArrow = "→";
+            GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = arrows[3];
+            //horizontalArrow = "→";
         }
         else if (horizontalDirection < 0)
         {
-            horizontalArrow = "←";
+            GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = arrows[2];
+            //horizontalArrow = "←";
         }
     }
 

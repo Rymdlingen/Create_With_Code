@@ -79,6 +79,11 @@ MonoBehaviour:
   successfulLandings: 0
   crashes: 0
   landerFire: []
+  arrows:
+  - {fileID: 21300000, guid: 979da7960077b49b2a4ce9c88230ce4d, type: 3}
+  - {fileID: 21300000, guid: 77835b7fbd9494865b03958164808c74, type: 3}
+  - {fileID: 21300000, guid: 587b1d6ae4e5648768e7ecd312234013, type: 3}
+  - {fileID: 21300000, guid: 83a6f75f205674966b45856c978e24aa, type: 3}
 --- !u!65 &215967283021758819
 BoxCollider:
   m_ObjectHideFlags: 0
