@@ -21,9 +21,6 @@ public class PlayerController : MonoBehaviour
     public bool zoomCameraActiveAndFarLeft = false;
     public bool zoomCameraActiveAndFarRight = false;
 
-    public int successfulLandings;
-    public int crashes;
-
     // Private variables.
     private Rigidbody playerRigidbody;
     private Camera sceneCameraComponent;
@@ -62,9 +59,6 @@ public class PlayerController : MonoBehaviour
         followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
 
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
-
-        // TODO how to get the particles? when instantiating new player? Use the use fuel bool and activate in another script?
-        //landerFire = Gam
     }
 
 
@@ -203,8 +197,8 @@ public class PlayerController : MonoBehaviour
             // If the player gets outside the boundaries of the main camer, tell the game manager that the lander has drifted out in outer space.
             if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 - screenBoundaryBuffert * 2 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0 - screenBoundaryBuffert * 2)
             {
-                DestroyLander();
                 hasDrifteOutInSpace = true;
+                DestroyLander();
             }
         }
 
@@ -259,7 +253,6 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                successfulLandings++;
                 Landed(verticalSpeed, horizontalSpeed);
 
                 gameActive = false;
@@ -331,7 +324,6 @@ public class PlayerController : MonoBehaviour
         gameManagerScript.FailedLandingScreen(true);
 
         DestroyLander();
-        crashes++;
         usingFuel = false;
         gameActive = false;
 

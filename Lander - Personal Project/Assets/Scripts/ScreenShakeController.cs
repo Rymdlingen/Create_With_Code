@@ -43,7 +43,7 @@ public class ScreenShakeController : MonoBehaviour
             }
 
             // Reduce the timer for all cameras with this script.
-            shakeTimeRemaining = Mathf.MoveTowards(shakeTimeRemaining, 0f, shakeFade * Time.deltaTime);
+            shakeTimeRemaining = Mathf.MoveTowards(shakeTimeRemaining, 0f, shakeFade * Time.unscaledDeltaTime);
         }
         else if (resetCameraAfterShake)
         {

@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameOverText;
 
     // Amount of fuel the player starts with.
-    public int fuelLeft = 3000;
+    public int fuelLeft = 1;
 
     // Timer variables.
     private int timer;
@@ -51,7 +51,10 @@ public class GameManager : MonoBehaviour
     private EventSystem eventSystem;
 
     bool gamePaused = false;
+    bool gameOver = false;
 
+    public int crashes;
+    public int successfulLandings;
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +86,16 @@ public class GameManager : MonoBehaviour
             CalculateMinutesAndSeconds();
         }
         DisplayTime();
-        CalculateFuel();
+
+        if (!playerControllerScript.hasDrifteOutInSpace)
+        {
+            CalculateFuel();
+        }
+        else
+        {
+            DriftedOutInSpaceScreen(true);
+            playerControllerScript.hasDrifteOutInSpace = false;
+        }
 
         altitudeText.SetText(Mathf.RoundToInt(playerControllerScript.hit.distance - 8).ToString());
         horizontalSpeedText.SetText(playerControllerScript.horizontalSpeed.ToString());
@@ -102,18 +114,18 @@ public class GameManager : MonoBehaviour
             if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
             {
                 MakePlayerFall();
+                gameOver = true;
             }
-            else
+            else if (gameOver)
             {
                 EndScreen(true);
+                gameOver = false;
             }
         }
         else
         {
             GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
         }
-
-        DriftedOutInSpaceScreen(playerControllerScript.hasDrifteOutInSpace);
     }
 
     private void CalculateMinutesAndSeconds()
@@ -183,7 +195,7 @@ public class GameManager : MonoBehaviour
             playerControllerScript.addFuel = false;
         }
 
-        if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused)
+        if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused && !playerControllerScript.hasDrifteOutInSpace)
         {
             fuelLeft -= 1;
         }
@@ -253,10 +265,13 @@ public class GameManager : MonoBehaviour
 
             if (active)
             {
+                Time.timeScale = 0;
+                successfulLandings++;
                 StartCoroutine(WaitWithActivatingButton(buttons));
             }
             else
             {
+                Time.timeScale = 1;
                 foreach (GameObject button in buttons)
                 {
                     button.GetComponent<Button>().interactable = false;
@@ -268,6 +283,8 @@ public class GameManager : MonoBehaviour
     // Change text on screen.
     public void FailedLandingScreen(bool active)
     {
+
+
         // Only display this screen if the player has fuel left, if the player has no fuel left the game over screen will be displayed instead.
         if (fuelLeft > 0)
         {
@@ -281,9 +298,13 @@ public class GameManager : MonoBehaviour
 
             if (active)
             {
+                Time.timeScale = 0;
+                crashes++;
                 StartCoroutine(WaitWithActivatingButton(buttons));
             }
+            else
             {
+                Time.timeScale = 1;
                 foreach (GameObject button in buttons)
                 {
                     button.GetComponent<Button>().interactable = false;
@@ -295,7 +316,7 @@ public class GameManager : MonoBehaviour
     // Change text on screen.
     public void DriftedOutInSpaceScreen(bool active)
     {
-        outerSpaceText.SetText("The lander drifted out in outer space.");
+        outerSpaceText.SetText("You went to far away from the planet and your lander is no longer in orbit");
 
         // Display the text and button.
         GameObject spaceScreen = GameObject.Find("Canvas").transform.Find("OuterSpace").gameObject;
@@ -305,9 +326,13 @@ public class GameManager : MonoBehaviour
 
         if (active)
         {
+            Time.timeScale = 0;
+            crashes++;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
+        else
         {
+            Time.timeScale = 1;
             foreach (GameObject button in buttons)
             {
                 button.GetComponent<Button>().interactable = false;
@@ -319,7 +344,7 @@ public class GameManager : MonoBehaviour
     // Change text on screen.
     private void EndScreen(bool active)
     {
-        gameOverText.SetText("Game Over!\nYou had " + playerControllerScript.successfulLandings + " successful landings and you crashed " + playerControllerScript.crashes + " times.\n You scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
+        gameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
         GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(!active);
 
         // Display the text and button.
@@ -332,6 +357,7 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
+        else
         {
             foreach (GameObject button in buttons)
             {
@@ -374,7 +400,7 @@ public class GameManager : MonoBehaviour
         // Reset screens and losing condition.
         SuccessfulLandingScreen(false);
         FailedLandingScreen(false);
-        playerControllerScript.hasDrifteOutInSpace = false;
+        DriftedOutInSpaceScreen(false);
 
         // Destroy the lander if it wasn't destroyed for some reason ( successful landing is a reason).
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
