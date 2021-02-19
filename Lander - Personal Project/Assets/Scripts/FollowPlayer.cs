@@ -33,7 +33,7 @@ public class FollowPlayer : MonoBehaviour
     // Update is called once per frame.
     void Update()
     {
-        zoomCameraXPositionRange = sceneCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x - sceneCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0)).x / 3;
+        zoomCameraXPositionRange = sceneCamera.targetTexture.width;
         Debug.Log(zoomCameraXPositionRange);
 
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)

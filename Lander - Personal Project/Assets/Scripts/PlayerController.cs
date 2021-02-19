@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
     {
         // If the player hold space, add force in the (local) upward direction of the player object.
         // Use up fuel when space is pressed.
-        if (Input.GetAxis("Jump") > 0)
+        if (Input.GetButton("Jump") || Input.GetButton("Fire1") || Input.GetButton("Fire2") || Input.GetButton("Fire3"))
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
 
@@ -184,9 +184,9 @@ public class PlayerController : MonoBehaviour
     void CheckPlayerPosition()
     {
         // Screen boundaries in pixels (+ buffert for the size of the lander).
-        int screenBoundaryBuffert = 10;
-        int screenHeightBoundary = Screen.height + screenBoundaryBuffert * 2;
-        int screenWidthBoundary = Screen.width + screenBoundaryBuffert;
+        int screenBoundaryBuffert = 5;
+        int screenHeightBoundary = sceneCameraComponent.targetTexture.height + screenBoundaryBuffert * 2;
+        int screenWidthBoundary = sceneCameraComponent.targetTexture.width + screenBoundaryBuffert;
 
         // Players position in screen points (pixels).
         Vector3 playersPositionOnScreen = sceneCameraComponent.WorldToScreenPoint(transform.position);
@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // If the player gets outside the boundaries of the main camer, tell the game manager that the lander has drifted out in outer space.
-            if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0)
+            if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 - screenBoundaryBuffert * 2 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0 - screenBoundaryBuffert * 2)
             {
                 DestroyLander();
                 hasDrifteOutInSpace = true;

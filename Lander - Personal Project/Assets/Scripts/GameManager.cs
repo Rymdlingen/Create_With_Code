@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -38,7 +40,6 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     private string scoreString = "";
 
-
     public GameObject playerPrefab;
 
     public PlayerController playerControllerScript;
@@ -46,6 +47,11 @@ public class GameManager : MonoBehaviour
     private GameObject player;
 
     public MainMenu mainMenuScript;
+
+    private EventSystem eventSystem;
+
+    bool gamePaused = false;
+
 
     // Start is called before the first frame update
     void Start()
@@ -55,11 +61,18 @@ public class GameManager : MonoBehaviour
         //Debug.Log(oldTime);
         minutes = 0;
         CalculateScore();
+        eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Cancel") && gamePaused == false)
+        {
+            PauseScreen(true);
+            gamePaused = true;
+        }
+
         if (newPoints > 0)
         {
             CalculateScore();
@@ -170,7 +183,7 @@ public class GameManager : MonoBehaviour
             playerControllerScript.addFuel = false;
         }
 
-        if (playerControllerScript.usingFuel && fuelLeft > 0)
+        if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused)
         {
             fuelLeft -= 1;
         }
@@ -207,7 +220,7 @@ public class GameManager : MonoBehaviour
         particlesScript.newLander = true;
 
         // Add force to the player so it moves into the screen.
-        player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0) * playerControllerScript.force * Time.deltaTime, ForceMode.Impulse);
+        player.GetComponent<Rigidbody>().AddForce(new Vector3(1, 1, 0).normalized * 30, ForceMode.VelocityChange);
 
         // Set game to active.
         playerControllerScript.gameActive = true;
@@ -233,7 +246,22 @@ public class GameManager : MonoBehaviour
             }
 
             // Display the text and button.
-            GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject.SetActive(active);
+            GameObject successScreen = GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject;
+            successScreen.SetActive(active);
+
+            GameObject[] buttons = new GameObject[] { successScreen.transform.Find("Continue Button").gameObject };
+
+            if (active)
+            {
+                StartCoroutine(WaitWithActivatingButton(buttons));
+            }
+            else
+            {
+                foreach (GameObject button in buttons)
+                {
+                    button.GetComponent<Button>().interactable = false;
+                }
+            }
         }
     }
 
@@ -244,7 +272,23 @@ public class GameManager : MonoBehaviour
         if (fuelLeft > 0)
         {
             crashedText.SetText("You just destroyed a 100 megabuck lander");
-            GameObject.Find("Canvas").transform.Find("FailedLanding").gameObject.SetActive(active);
+
+            // Display the text and button.
+            GameObject failScreen = GameObject.Find("Canvas").transform.Find("FailedLanding").gameObject;
+            failScreen.SetActive(active);
+
+            GameObject[] buttons = new GameObject[] { failScreen.transform.Find("Continue Button").gameObject };
+
+            if (active)
+            {
+                StartCoroutine(WaitWithActivatingButton(buttons));
+            }
+            {
+                foreach (GameObject button in buttons)
+                {
+                    button.GetComponent<Button>().interactable = false;
+                }
+            }
         }
     }
 
@@ -252,7 +296,24 @@ public class GameManager : MonoBehaviour
     public void DriftedOutInSpaceScreen(bool active)
     {
         outerSpaceText.SetText("The lander drifted out in outer space.");
-        GameObject.Find("Canvas").transform.Find("OuterSpace").gameObject.SetActive(active);
+
+        // Display the text and button.
+        GameObject spaceScreen = GameObject.Find("Canvas").transform.Find("OuterSpace").gameObject;
+        spaceScreen.SetActive(active);
+
+        GameObject[] buttons = new GameObject[] { spaceScreen.transform.Find("Continue Button").gameObject };
+
+        if (active)
+        {
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        {
+            foreach (GameObject button in buttons)
+            {
+                button.GetComponent<Button>().interactable = false;
+            }
+        }
+
     }
 
     // Change text on screen.
@@ -260,9 +321,51 @@ public class GameManager : MonoBehaviour
     {
         gameOverText.SetText("Game Over!\nYou had " + playerControllerScript.successfulLandings + " successful landings and you crashed " + playerControllerScript.crashes + " times.\n You scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
         GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(!active);
-        GameObject.Find("Canvas").transform.Find("GameOver").gameObject.SetActive(active);
+
+        // Display the text and button.
+        GameObject endScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
+        endScreen.SetActive(active);
+
+        GameObject[] buttons = new GameObject[] { endScreen.transform.Find("Continue Button").gameObject };
+
+        if (active)
+        {
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        {
+            foreach (GameObject button in buttons)
+            {
+                button.GetComponent<Button>().interactable = false;
+            }
+        }
     }
 
+    // Change text on screen.
+    public void PauseScreen(bool active)
+    {
+        // Display the text and buttons.
+        GameObject pauseScreen = GameObject.Find("Canvas").transform.Find("PauseScreen").gameObject;
+        pauseScreen.SetActive(active);
+
+        GameObject[] buttons = new GameObject[] { pauseScreen.transform.Find("Continue Button").gameObject, pauseScreen.transform.Find("Restart Button").gameObject };
+
+        if (active)
+        {
+            Time.timeScale = 0;
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        else
+        {
+            Time.timeScale = 1;
+
+            foreach (GameObject button in buttons)
+            {
+                button.GetComponent<Button>().interactable = false;
+            }
+
+            gamePaused = false;
+        }
+    }
 
 
     // This happens if a button is pressed that makes the game continue.
@@ -291,5 +394,17 @@ public class GameManager : MonoBehaviour
     public void BackToMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    IEnumerator WaitWithActivatingButton(GameObject[] buttons)
+    {
+        yield return new WaitForSecondsRealtime(1);
+
+        foreach (GameObject button in buttons)
+        {
+            button.GetComponent<Button>().interactable = true;
+        }
+
+        eventSystem.SetSelectedGameObject(buttons[0]);
     }
 }
