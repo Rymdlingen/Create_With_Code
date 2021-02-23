@@ -118,13 +118,10 @@ public class GameManager : MonoBehaviour
             }
             else if (gameOver)
             {
+                GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
                 EndScreen(true);
                 gameOver = false;
             }
-        }
-        else
-        {
-            GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
         }
     }
 
@@ -222,6 +219,8 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableSceneCamera();
         }
+
+        Debug.Log(Time.timeScale);
 
         // TODO fix the hardcoded position, needs to be based on screen size.
         // Instantiate a new lander.

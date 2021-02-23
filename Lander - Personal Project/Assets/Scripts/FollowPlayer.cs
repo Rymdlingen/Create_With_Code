@@ -34,7 +34,6 @@ public class FollowPlayer : MonoBehaviour
     void Update()
     {
         zoomCameraXPositionRange = sceneCamera.targetTexture.width;
-        Debug.Log(zoomCameraXPositionRange);
 
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
