@@ -8,13 +8,9 @@ public class PixelArtCanvas : CanvasScaler
     private Vector2 previousScreenSize;
     private RenderTexture renderTexture;
 
-    private FollowPlayer followPlayerScript;
-
     protected override void Start()
     {
         base.Start();
-
-        followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
     }
 
     protected override void HandleConstantPixelSize()

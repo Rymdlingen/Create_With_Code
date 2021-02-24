@@ -9,18 +9,18 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     // Text fields.
-    [SerializeField] TextMeshProUGUI scoreText;
-    [SerializeField] TextMeshProUGUI timeText;
-    [SerializeField] TextMeshProUGUI fuelText;
-    [SerializeField] TextMeshProUGUI altitudeText;
-    [SerializeField] TextMeshProUGUI horizontalSpeedText;
-    [SerializeField] TextMeshProUGUI verticalSpeedText;
+    [SerializeField] private TextMeshProUGUI scoreText;
+    [SerializeField] private TextMeshProUGUI timeText;
+    [SerializeField] private TextMeshProUGUI fuelText;
+    [SerializeField] private TextMeshProUGUI altitudeText;
+    [SerializeField] private TextMeshProUGUI horizontalSpeedText;
+    [SerializeField] private TextMeshProUGUI verticalSpeedText;
 
-    [SerializeField] TextMeshProUGUI successfulLandningText;
-    [SerializeField] TextMeshProUGUI crashedText;
-    [SerializeField] TextMeshProUGUI outerSpaceText;
+    [SerializeField] private TextMeshProUGUI successfulLandningText;
+    [SerializeField] private TextMeshProUGUI crashedText;
+    [SerializeField] private TextMeshProUGUI outerSpaceText;
 
-    [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI gameOverText;
 
     // Amount of fuel the player starts with.
     public int fuelLeft = 3000;

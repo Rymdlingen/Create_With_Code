@@ -8,8 +8,8 @@ public class PlatformSprite : MonoBehaviour
     [SerializeField] private Sprite bigSprite;
 
     private Camera zoomCamera;
-
     private bool zoomCameraActive;
+
     private SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
@@ -22,8 +22,10 @@ public class PlatformSprite : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if the zoom camera is active or not.
         zoomCameraActive = zoomCamera.isActiveAndEnabled;
 
+        // If the zoom camera is active render the big sprites.
         if (zoomCameraActive)
         {
             if (spriteRenderer.sprite != bigSprite)
@@ -33,6 +35,7 @@ public class PlatformSprite : MonoBehaviour
         }
         else
         {
+            // If the zoom camera is not active then the scene camera is active, render the small sprite.
             if (spriteRenderer.sprite != smallSprite)
             {
                 spriteRenderer.sprite = smallSprite;
