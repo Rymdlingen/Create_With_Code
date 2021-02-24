@@ -249,7 +249,7 @@ public class GameManager : MonoBehaviour
         int startY = sceneCamera.targetTexture.height - sceneCamera.targetTexture.height / 3;
 
         // Instantiate a new lander and find the needed components.
-        player = Instantiate(playerPrefab, new Vector3(-startX - 15, startY, -2), playerPrefab.transform.rotation);
+        player = Instantiate(playerPrefab, new Vector3(-startX - 15, startY, -3), playerPrefab.transform.rotation);
         playerControllerScript = player.GetComponent<PlayerController>();
         LanderParticles particlesScript = player.transform.Find("Lander Fire Particles").GetComponent<LanderParticles>();
         particlesScript.newLander = true;

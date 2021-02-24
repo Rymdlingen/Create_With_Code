@@ -40,7 +40,8 @@ public class FollowPlayer : MonoBehaviour
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
         {
             playerControllerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-            transform.position = playerControllerScript.gameObject.transform.position;
+            Vector3 playerPosition = playerControllerScript.gameObject.transform.position;
+            transform.position = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z - 10);
         }
 
         // When the zoom camera is not used, none of the code after this statement is needed, so we continue to the next frame.
