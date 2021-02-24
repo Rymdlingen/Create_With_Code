@@ -62,11 +62,14 @@ public class ScreenShakeController : MonoBehaviour
     // Sets the duration and the power of the screen shake. Also calculates the fade of the shaking and sets the camera reset to true.
     public void ShakeScreen(float shakeLength, float shakePower)
     {
+        // Sets the time and power for the shake.
         shakeTimeRemaining = shakeLength;
         this.shakePower = shakePower;
 
+        // Calculates the fade of the shake.
         shakeFade = shakePower / shakeLength;
 
+        // Makes sure the camare is reset to it's original position after the shake.
         resetCameraAfterShake = true;
     }
 }

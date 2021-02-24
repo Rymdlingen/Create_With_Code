@@ -36,11 +36,9 @@ public class PlayerController : MonoBehaviour
     private float verticalDirection;
     private float horizontalDirection;
 
-    private FollowPlayer followPlayerScript;
     private GameManager gameManagerScript;
 
     public ParticleSystem[] landerFire;
-
     public Sprite[] arrows;
 
     //Rotate the lander to upright position.
@@ -56,8 +54,6 @@ public class PlayerController : MonoBehaviour
 
         zoomCameraComponent = GameObject.Find("Zoom Camera").GetComponent<Camera>();
 
-        followPlayerScript = GameObject.Find("Focal Point").GetComponent<FollowPlayer>();
-
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
@@ -67,11 +63,12 @@ public class PlayerController : MonoBehaviour
         // Calculates the distance between the lander and the ground directly below.
         Altitude();
 
+        // TODO do not work after changing to pausing the time.
         // Rotate the lander to upright position if landed at an angle
         if (rotationTimeRemaining > 0)
         {
-            transform.rotation = new Quaternion(0, 0, Mathf.MoveTowardsAngle(transform.rotation.z, 0, Time.deltaTime), transform.rotation.w);
-            rotationTimeRemaining = Mathf.MoveTowards(rotationTimeRemaining, 0, Time.deltaTime);
+            transform.rotation = new Quaternion(0, 0, Mathf.MoveTowardsAngle(transform.rotation.z, 0, Time.unscaledDeltaTime), transform.rotation.w);
+            rotationTimeRemaining = Mathf.MoveTowards(rotationTimeRemaining, 0, Time.unscaledDeltaTime);
             if (rotationTimeRemaining <= 0)
             {
                 StopPlayer();
@@ -93,6 +90,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            // If the game is not active, fuel is not used.
             usingFuel = false;
         }
 
@@ -105,13 +103,16 @@ public class PlayerController : MonoBehaviour
     {
         rotationInput = Input.GetAxis("Horizontal");
 
+        // Rotation cooldown.
         if (hasRotated)
         {
+            // Restarts the timer.
             rotationCoolDownCounter = rotationCoolDown;
             hasRotated = false;
         }
         else
         {
+            // Counts down.
             rotationCoolDownCounter -= Time.deltaTime;
         }
 
@@ -133,7 +134,6 @@ public class PlayerController : MonoBehaviour
             // No rotation.
             rotationAngle = 0;
         }
-
 
         // Rotate player.
         transform.Rotate(Vector3.back * rotationAngle);
@@ -161,14 +161,19 @@ public class PlayerController : MonoBehaviour
     // For freezing the players position when the game is not active. (used when player successfully lands on a platform.)
     public void StopPlayer()
     {
+        // Takes away the force.
         playerRigidbody.velocity = Vector3.zero;
+        // Freezes the players position and rotation.
         playerRigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
+    // Moves the player downwards and restricts the rotation when there is no fuel left.
     public void OutOfFuel()
     {
-        //playerRigidbody.velocity = Vector3.down;
+        // Game is not active.
         gameActive = false;
+
+        // Add downward force and freeze the players rotation.
         playerRigidbody.AddForce(Vector3.down * force * Time.deltaTime);
         playerRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
@@ -188,44 +193,45 @@ public class PlayerController : MonoBehaviour
         // When the scene camera is active, this checks if the lander drifts out in space.
         if (sceneCameraComponent.isActiveAndEnabled == true)
         {
-            // When the lander is spawned it is to the left of the screen, moving to the right. 
+            // When the lander is spawned it is to the left of the screen, moving to the right and will not trigger the out in space message. 
             if (playersPositionOnScreen.x < 0 && playerRigidbody.velocity.x > 0)
             {
                 return;
             }
 
-            // If the player gets outside the boundaries of the main camer, tell the game manager that the lander has drifted out in outer space.
+            // If the player gets outside the boundaries of the main camera, tell the game manager that the lander has drifted out in outer space and destroy the lander.
             if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 - screenBoundaryBuffert * 2 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0 - screenBoundaryBuffert * 2)
             {
+                // Only shows the message if the game is active otherwise only destroyes the lander (for when the player is out of fuel).
                 if (gameActive)
                 {
                     hasDrifteOutInSpace = true;
                 }
+
                 DestroyLander();
             }
         }
 
-        // Boundries for when the zoom camera is active to the far left or right of the screen.
+        // Left or right boundary for when the zoom camera is active to the far left or right of the screen.
         if (zoomCameraActiveAndFarLeft || zoomCameraActiveAndFarRight)
         {
-            // Players position in viewport points, values between 0 and 1 for all positions on screen, of screen values go higher and lower.
+            // Players position in viewport points, values between 0 and 1 for all positions on screen, values for positions outside the screen is higher or lower.
             Vector3 playersPositionOnZoomScreen = GameObject.Find("Zoom Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
 
-            // Takes the x and y values of the players position and puts them inside the range 0 to 1, if the player is outside the screen the value is set to 0 or 1.
-            // playersPositionOnZoomScreen.y = Mathf.Clamp01(playersPositionOnZoomScreen.y);
+            // Takes the x value of the players position and puts them inside the range 0 to 1, if the player is outside the screen the value is set back to 0 or 1.
             playersPositionOnZoomScreen.x = Mathf.Clamp01(playersPositionOnZoomScreen.x);
 
-            // Takes tha possibly new values and possibly changes the players position.
+            // Takes tha possibly new values and possibly changes the players position, to keep the player on the screen.
             // Keeps the player inside the screen. The only time the player can reach the screen edge of the zoom camera is when a platform is so far to the left or right that the camera is positioned based on the screen width instead of based on the platforms position.
             transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnZoomScreen);
 
-            // Stops the left motion if the player hits the boundry.
+            // Stops the left motion if the player hits the boundary.
             if (zoomCameraActiveAndFarLeft && playersPositionOnZoomScreen.x <= 0)
             {
                 playerRigidbody.velocity = new Vector3(0, playerRigidbody.velocity.y, 0);
             }
 
-            // Stops the right motion if the player hits the boundry.
+            // Stops the right motion if the player hits the boundary.
             if (zoomCameraActiveAndFarRight && playersPositionOnZoomScreen.x >= screenWidthBoundary)
             {
                 playerRigidbody.velocity = new Vector3(0, playerRigidbody.velocity.y, 0);
@@ -234,9 +240,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Used to see if the player collides with the ground or a platform.
     private void OnCollisionEnter(Collision collision)
     {
-        // If the player collides with the ground they lose and get destroyed.
+        // If the player collides with the ground they crash.
         if (collision.gameObject.CompareTag("Ground") && (gameActive || gameManagerScript.fuelLeft < 1))
         {
             Crash();
@@ -244,27 +251,32 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Platform") && (gameActive || gameManagerScript.fuelLeft < 1))
         {
-            // If the player is not paralell with the platform when landing, they lose.
-            // If the player is falling to fast into the platform, they lose.
+            // If the player is not paralell (on rotation to left or right is okay for a hard landing) with the platform when landing, they crash.
+            // If the player is falling to fast into the platform, they crash.
 
+            // Calculates if the player is rotated too much to land.
             bool rotatedToMuch = transform.rotation.eulerAngles.z < 360 - oneRotation * 2 + 1 && transform.rotation.eulerAngles.z > oneRotation * 2 - 1;
 
+            // If the player is rotated too much or the speed is too high they crash.
             if (rotatedToMuch || verticalSpeed > 35 || horizontalSpeed > 31)
             {
                 Crash();
             }
             else
             {
+                // Successfull landing, calculates if it was a good landing from the speed (and the rotation). 
                 Landed(verticalSpeed, horizontalSpeed);
 
+                // Pauses the game.
                 gameActive = false;
             }
         }
     }
 
+    // Used for detecting if player touches an powerup.
     private void OnTriggerEnter(Collider other)
     {
-        // If the player touches a powerup the powerup is destroyed.
+        // If the game is active and the player touches a powerup the powerup is destroyed and fuel is added.
         if (other.gameObject.CompareTag("Powerup") && gameActive)
         {
             Destroy(other.gameObject);
@@ -275,8 +287,6 @@ public class PlayerController : MonoBehaviour
     // Calculates both the vertical and horizontal direction and speed.
     private void CallculateDirectionAndSpeed()
     {
-        // TODO display the speed slower? Maybe it helps if I change the force? The movement should work a bit differently anyways.
-
         // Calculating the vertical direction and speed.
         verticalDirection = Mathf.RoundToInt(playerRigidbody.velocity.y * 3.6f);
         verticalSpeed = Mathf.Abs(verticalDirection);
@@ -285,38 +295,38 @@ public class PlayerController : MonoBehaviour
         horizontalDirection = Mathf.RoundToInt(playerRigidbody.velocity.x * 3.6f);
         horizontalSpeed = Mathf.Abs(horizontalDirection);
 
-        // Depending on the vertical direction different arrows are displayed.
+        // Depending on the vertical direction up, down or no arrow is displayed.
         if (verticalSpeed == 0)
         {
+            // No arrow.
             GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = null;
-            // verticalArrow = " ";
         }
         else if (verticalDirection > 0)
         {
+            // Up arrow.
             GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = arrows[0];
-            // verticalArrow = "↑";
         }
         else if (verticalDirection < 0)
         {
+            // Down arrow.
             GameObject.Find("Canvas").transform.Find("Vertical speed").Find("Vertical Arrow").GetComponent<SpriteRenderer>().sprite = arrows[1];
-            // verticalArrow = "↓";
         }
 
-        // Depending on the horizontal direction different arrows are displayed.
+        // Depending on the horizontal direction right, left or no arrow is displayed.
         if (horizontalSpeed == 0)
         {
+            // No arrow.
             GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = null;
-            //horizontalArrow = " ";
         }
         else if (horizontalDirection > 0)
         {
+            // Right arrow.
             GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = arrows[3];
-            //horizontalArrow = "→";
         }
         else if (horizontalDirection < 0)
         {
+            // Left arrow.
             GameObject.Find("Canvas").transform.Find("Horizontal speed").Find("Horizontal Arrow").GetComponent<SpriteRenderer>().sprite = arrows[2];
-            //horizontalArrow = "←";
         }
     }
 
@@ -344,6 +354,7 @@ public class PlayerController : MonoBehaviour
         {
             // Hard landing.
             basePoints = 15;
+
             // If the lander lands at an angle, start the rotation timer by setting it to 1 second.
             if (transform.rotation.z != 0)
             {
@@ -375,16 +386,19 @@ public class PlayerController : MonoBehaviour
         usingFuel = false;
     }
 
+    // Sends an ray straight down to se how far the ground is.
     private void Altitude()
     {
         Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
     }
 
+    // Destroys the lander.
     private void DestroyLander()
     {
         Destroy(gameObject);
     }
 
+    // Calls the screen shake in the screen shake controller.
     private void ScreenShake(float duration, float power)
     {
         // Activate screen shake on the active camera.
@@ -398,9 +412,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Bounces the lander if it was a hard landing.
     private void BounceLander()
     {
-
         playerRigidbody.velocity = Vector3.zero;
         playerRigidbody.AddForce(Vector3.up, ForceMode.Impulse);
     }

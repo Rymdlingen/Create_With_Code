@@ -22,6 +22,7 @@ public class LanderParticles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // If there is a new lander, get all the components.
         if (newLander)
         {
             particleSpreadOnGround = GameObject.Find("Fire on ground").gameObject;
@@ -29,13 +30,16 @@ public class LanderParticles : MonoBehaviour
             newLander = false;
         }
 
+        // Play the right particles.
         if (GameObject.FindGameObjectWithTag("Player"))
         {
+            // Position the spread of the ground particles at the right place and play the ground particles if they are needed.
             PlaceParticleSpreadOnGround();
 
-
+            // When fuel is used play the fire particles.
             if (playerControllerScript.usingFuel)
             {
+                // Play all fire particles.
                 foreach (ParticleSystem particle in fireParticles)
                 {
                     particle.Play();
@@ -43,6 +47,7 @@ public class LanderParticles : MonoBehaviour
             }
             else
             {
+                // Stop all fire particles.
                 foreach (ParticleSystem particle in fireParticles)
                 {
                     particle.Stop();
@@ -51,18 +56,22 @@ public class LanderParticles : MonoBehaviour
         }
     }
 
+    // Positions the particel spread on the ground in the right angle.
     private void PlaceParticleSpreadOnGround()
     {
+        // Check where the particles are hitting the ground.
         Vector3 localDown = transform.TransformDirection(Vector3.down);
         bool hitFound = Physics.Raycast(transform.position - localDown * 10, localDown, out hit, Mathf.Infinity, 1, QueryTriggerInteraction.Ignore);
-        Debug.DrawLine(transform.position - localDown * 10, hit.point, Color.cyan, 5f);
 
+        // Check if the lander is close enough to the ground.
         if (hitFound && hit.distance < 25)
         {
+            // Position and rotate the particle spread.
             particleSpreadOnGround.transform.position = new Vector3(hit.point.x, hit.point.y, transform.position.z);
             particleSpreadOnGround.transform.rotation = hit.transform.rotation;
 
-            if (playerControllerScript.usingFuel)
+            // If the fire is hiting the griund and not a platform, also play the ground particles.
+            if (playerControllerScript.usingFuel && hit.transform.CompareTag("Ground"))
             {
                 dustParticles.Play();
             }
@@ -73,6 +82,7 @@ public class LanderParticles : MonoBehaviour
         }
         else
         {
+            // Move the spread to a safe distance when not needed.
             particleSpreadOnGround.transform.position = new Vector3(transform.position.x, transform.position.y - 30, transform.position.z);
             dustParticles.Stop();
         }

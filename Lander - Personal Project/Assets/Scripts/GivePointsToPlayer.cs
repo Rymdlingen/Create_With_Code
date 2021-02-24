@@ -25,6 +25,7 @@ public class GivePointsToPlayer : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        // If a platform collides with the player new points are added to the player controller script.
         if (collision.gameObject.CompareTag("Player"))
         {
             playerControllerScript = collision.gameObject.GetComponent<PlayerController>();
@@ -32,6 +33,7 @@ public class GivePointsToPlayer : MonoBehaviour
         }
     }
 
+    // Calculates the new points based of the base points and this platforms multiplier.
     public int Points()
     {
         return playerControllerScript.basePoints * multiplier;

@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameOverText;
 
     // Amount of fuel the player starts with.
-    public int fuelLeft = 1;
+    public int fuelLeft = 3000;
 
     // Timer variables.
     private int timer;
@@ -31,84 +31,92 @@ public class GameManager : MonoBehaviour
     private int seconds = 0;
     private int minutes = 0;
     private bool minuteAdded = true;
-    private int oldTime;
     private float addTime;
 
     // Score variables.
     public int newPoints;
     private string newPointsString;
     private int score = 0;
-    private string scoreString = "";
+
+    // Power p variables.
+    private int fuelInPowerUp = 500;
 
     public GameObject playerPrefab;
-
     public PlayerController playerControllerScript;
-
-    private GameObject player;
-
     public MainMenu mainMenuScript;
-
+    private GameObject player;
     private EventSystem eventSystem;
 
     bool gamePaused = false;
     bool gameOver = false;
 
-    public int crashes;
-    public int successfulLandings;
+    // Counts landings and crashes.
+    private int crashes;
+    private int successfulLandings;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Instantiate the first lander.
         ResetPlayer();
-        // oldTime = Mathf.RoundToInt(Time.realtimeSinceStartup);
-        //Debug.Log(oldTime);
+
+        // Reset the timer.
         minutes = 0;
-        CalculateScore();
+
+        // Find the event system, used for buttons.
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
         if (Input.GetButtonDown("Cancel") && gamePaused == false)
         {
+            // Activates the pase screen and sets the pause bool to true.
             PauseScreen(true);
             gamePaused = true;
         }
 
+        // If there is new points gained, call the calclation of score.
         if (newPoints > 0)
         {
             CalculateScore();
         }
 
+        // As long as the player has fuel left (and time is not paused) the time is calculated.
         if (fuelLeft > 0)
         {
             CalculateMinutesAndSeconds();
         }
         DisplayTime();
 
-        if (!playerControllerScript.hasDrifteOutInSpace)
-        {
-            CalculateFuel();
-        }
-        else
+        // Calculate and display how much fuel the player has left.
+        CalculateFuel();
+
+        // Activate the out in space message if the player has exited the screen.
+        if (playerControllerScript.hasDrifteOutInSpace)
         {
             DriftedOutInSpaceScreen(true);
             playerControllerScript.hasDrifteOutInSpace = false;
         }
 
+        // Fisplay the text for altitde and speed.
         altitudeText.SetText(Mathf.RoundToInt(playerControllerScript.hit.distance - 8).ToString());
         horizontalSpeedText.SetText(playerControllerScript.horizontalSpeed.ToString());
         verticalSpeedText.SetText(playerControllerScript.verticalSpeed.ToString());
 
+        // Activate the screen for a successfl landing when there is new points gained.
         if (playerControllerScript.basePoints > 0)
         {
             SuccessfulLandingScreen(true);
             playerControllerScript.basePoints = 0;
         }
 
+        // When the player is out of fuel, start the end.
         if (fuelLeft < 1)
         {
+            // As long as there is a lander, make the it fall and display the out of fuel message.
             if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
             {
                 GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(true);
@@ -117,6 +125,7 @@ public class GameManager : MonoBehaviour
             }
             else if (gameOver)
             {
+                // Hide the out of fuel message and display the game over screen.
                 GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
                 EndScreen(true);
                 gameOver = false;
@@ -124,10 +133,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Counts the time the player has spent trying to land, pauses when game is not active (because time is paused then).
     private void CalculateMinutesAndSeconds()
     {
-        // Start timer.
+        // Adds the time since the last frame.
         addTime += Time.deltaTime;
+        // When a second is collected it is added to the timer.
         if (addTime >= 1)
         {
             addTime -= 1;
@@ -166,48 +177,61 @@ public class GameManager : MonoBehaviour
         timeString = minutesText + ":" + secondsText;
     }
 
+    // Changes the displayed time.
     public void DisplayTime()
     {
-        // Change the displayed time.
         timeText.SetText(timeString);
     }
 
+    // Takes the newly gained points and adds them to the total score.
     private void CalculateScore()
     {
+        // Add the new points to the total.
         score += newPoints;
+        // Make a string out of the new points to display them.
         newPointsString = newPoints.ToString();
+        // Reset the new points.
         newPoints = 0;
 
-        scoreString = MakeFourCharString(score.ToString(), '0');
-
-        scoreText.SetText(scoreString);
+        // Set the text to display the total score.
+        scoreText.SetText(MakeFourCharString(score.ToString(), '0'));
     }
 
+    // Calculates how much fuel is left and sets the displayed text to the right number.
     private void CalculateFuel()
     {
+        // Adds fuel if a powerup is collected.
         if (playerControllerScript.addFuel)
         {
-            fuelLeft += 500;
+            fuelLeft += fuelInPowerUp;
+            // Resets the bool.
             playerControllerScript.addFuel = false;
         }
 
+        // Takes away fuel if space is pressed while game is active.
         if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused && !playerControllerScript.hasDrifteOutInSpace)
         {
+            // Takes away 1 fuel every frame.
             fuelLeft -= 1;
         }
 
+        // Sets the displayed text to the correct amount of fuel.
         fuelText.SetText(MakeFourCharString(fuelLeft.ToString(), '0'));
     }
 
+    // Used to display strings with four chars by adding 0's in front.
     private string MakeFourCharString(string originalString, char fillerChar)
     {
+        // Converting the char to a string.
         string fillerString = fillerChar.ToString();
 
+        // Adding the filler until the length of the string to be displayed is 4.
         for (int stringLength = originalString.Length; stringLength < 4; stringLength++)
         {
             originalString = fillerString + originalString;
         }
 
+        // Returns a four char string.
         return originalString;
     }
 
@@ -219,13 +243,14 @@ public class GameManager : MonoBehaviour
             GameObject.Find("Focal Point").GetComponent<FollowPlayer>().EnableSceneCamera();
         }
 
-        Debug.Log(Time.timeScale);
+        // Caclculate starting position for new lander.
+        Camera sceneCamera = GameObject.Find("Scene Camera").GetComponent<Camera>();
+        int startX = sceneCamera.targetTexture.width + sceneCamera.targetTexture.width / 2;
+        int startY = sceneCamera.targetTexture.height - sceneCamera.targetTexture.height / 3;
 
-        // TODO fix the hardcoded position, needs to be based on screen size.
-        // Instantiate a new lander.
-        player = Instantiate(playerPrefab, new Vector3(-427, 147, -2), playerPrefab.transform.rotation);
+        // Instantiate a new lander and find the needed components.
+        player = Instantiate(playerPrefab, new Vector3(-startX - 15, startY, -2), playerPrefab.transform.rotation);
         playerControllerScript = player.GetComponent<PlayerController>();
-
         LanderParticles particlesScript = player.transform.Find("Lander Fire Particles").GetComponent<LanderParticles>();
         particlesScript.newLander = true;
 
@@ -236,45 +261,41 @@ public class GameManager : MonoBehaviour
         playerControllerScript.gameActive = true;
     }
 
-    // METHODS THAT CHANGE WHAT TEXT IS DISPLAYED ON SCRREN.
+    // METHODS THAT CHANGE WHAT TEXT IS DISPLAYED ON SCREEN.
 
     // Change text on screen.
     public void SuccessfulLandingScreen(bool active)
     {
-        // Successful landings can only happen if the player has fuel left.
-        if (fuelLeft > 0)
+        // Check if the player is given points for a good or a bad landing and display the right message.
+        if (playerControllerScript.basePoints == 15)
         {
-            if (playerControllerScript.basePoints == 15)
-            {
-                // Text for hard landing.
-                successfulLandningText.SetText("You landed hard\nCommunication system destroyed\n" + newPointsString + " points");
-            }
-            else
-            {
-                // Text for soft landing.
-                successfulLandningText.SetText("Congratulations!\nThat was a great landing\n" + newPointsString + " points");
-            }
+            // Text for bad landing.
+            successfulLandningText.SetText("You landed hard\nCommunication system destroyed\n" + newPointsString + " points");
+        }
+        else
+        {
+            // Text for good landing.
+            successfulLandningText.SetText("Congratulations!\nThat was a great landing\n" + newPointsString + " points");
+        }
 
-            // Display the text and button.
-            GameObject successScreen = GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject;
-            successScreen.SetActive(active);
+        // Display the text and button.
+        GameObject successScreen = GameObject.Find("Canvas").transform.Find("SuccessfulLanding").gameObject;
+        successScreen.SetActive(active);
 
-            GameObject[] buttons = new GameObject[] { successScreen.transform.Find("Continue Button").gameObject };
+        GameObject[] buttons = new GameObject[] { successScreen.transform.Find("Continue Button").gameObject };
 
-            if (active)
-            {
-                Time.timeScale = 0;
-                successfulLandings++;
-                StartCoroutine(WaitWithActivatingButton(buttons));
-            }
-            else
-            {
-                Time.timeScale = 1;
-                foreach (GameObject button in buttons)
-                {
-                    button.GetComponent<Button>().interactable = false;
-                }
-            }
+        // Pause the time, add a successful landing and activate button.
+        if (active)
+        {
+            Time.timeScale = 0;
+            successfulLandings++;
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        else
+        {
+            // Start time and deactivate button.
+            Time.timeScale = 1;
+            DeactivateButton(buttons);
         }
     }
 
@@ -303,10 +324,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 Time.timeScale = 1;
-                foreach (GameObject button in buttons)
-                {
-                    button.GetComponent<Button>().interactable = false;
-                }
+                DeactivateButton(buttons);
             }
         }
     }
@@ -325,16 +343,14 @@ public class GameManager : MonoBehaviour
         if (active)
         {
             Time.timeScale = 0;
+            playerControllerScript.usingFuel = false;
             crashes++;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
         else
         {
             Time.timeScale = 1;
-            foreach (GameObject button in buttons)
-            {
-                button.GetComponent<Button>().interactable = false;
-            }
+            DeactivateButton(buttons);
         }
 
     }
@@ -357,10 +373,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            foreach (GameObject button in buttons)
-            {
-                button.GetComponent<Button>().interactable = false;
-            }
+            DeactivateButton(buttons);
         }
     }
 
@@ -382,10 +395,7 @@ public class GameManager : MonoBehaviour
         {
             Time.timeScale = 1;
 
-            foreach (GameObject button in buttons)
-            {
-                button.GetComponent<Button>().interactable = false;
-            }
+            DeactivateButton(buttons);
 
             gamePaused = false;
         }
@@ -430,5 +440,13 @@ public class GameManager : MonoBehaviour
         }
 
         eventSystem.SetSelectedGameObject(buttons[0]);
+    }
+
+    private void DeactivateButton(GameObject[] buttons)
+    {
+        foreach (GameObject button in buttons)
+        {
+            button.GetComponent<Button>().interactable = false;
+        }
     }
 }
