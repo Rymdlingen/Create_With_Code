@@ -39,7 +39,6 @@ public class FollowPlayer : MonoBehaviour
         {
             playerControllerScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
             transform.position = playerControllerScript.gameObject.transform.position;
-            //transform.rotation = playerControllerScript.gameObject.transform.rotation;
         }
 
         if (!zoom)
@@ -71,7 +70,7 @@ public class FollowPlayer : MonoBehaviour
 
         zoomCamera.transform.position = new Vector3(zoomCameraX, Mathf.Round(zoomCameraY), zoomCamera.transform.position.z);
 
-        if (transform.position.y - latestPlatformPosition.y > 130)
+        if (transform.position.y - latestPlatformPosition.y > 130 || latestPlatformPosition.y - transform.position.y > 30)
         {
             // Switches back to the scene camera.
             EnableSceneCamera();

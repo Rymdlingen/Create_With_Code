@@ -109,10 +109,9 @@ public class GameManager : MonoBehaviour
 
         if (fuelLeft < 1)
         {
-            GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(true);
-
             if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
             {
+                GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(true);
                 MakePlayerFall();
                 gameOver = true;
             }

@@ -82,11 +82,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Check if player is on screen.
+        CheckPlayerPosition();
+
         if (gameActive)
         {
-            // Keep player on screen.
-            CheckPlayerPosition();
-
             // Move player.
             RotatePlayer();
             AcceleratePlayer();
@@ -197,7 +197,10 @@ public class PlayerController : MonoBehaviour
             // If the player gets outside the boundaries of the main camer, tell the game manager that the lander has drifted out in outer space.
             if (playersPositionOnScreen.y > screenHeightBoundary || playersPositionOnScreen.y < 0 - screenBoundaryBuffert * 2 || playersPositionOnScreen.x > screenWidthBoundary || playersPositionOnScreen.x < 0 - screenBoundaryBuffert * 2)
             {
-                hasDrifteOutInSpace = true;
+                if (gameActive)
+                {
+                    hasDrifteOutInSpace = true;
+                }
                 DestroyLander();
             }
         }
@@ -209,13 +212,12 @@ public class PlayerController : MonoBehaviour
             Vector3 playersPositionOnZoomScreen = GameObject.Find("Zoom Camera").GetComponent<Camera>().WorldToViewportPoint(transform.position);
 
             // Takes the x and y values of the players position and puts them inside the range 0 to 1, if the player is outside the screen the value is set to 0 or 1.
-            playersPositionOnZoomScreen.y = Mathf.Clamp01(playersPositionOnZoomScreen.y);
+            // playersPositionOnZoomScreen.y = Mathf.Clamp01(playersPositionOnZoomScreen.y);
             playersPositionOnZoomScreen.x = Mathf.Clamp01(playersPositionOnZoomScreen.x);
 
             // Takes tha possibly new values and possibly changes the players position.
             // Keeps the player inside the screen. The only time the player can reach the screen edge of the zoom camera is when a platform is so far to the left or right that the camera is positioned based on the screen width instead of based on the platforms position.
             transform.position = GameObject.Find("Zoom Camera").GetComponent<Camera>().ViewportToWorldPoint(playersPositionOnZoomScreen);
-
 
             // Stops the left motion if the player hits the boundry.
             if (zoomCameraActiveAndFarLeft && playersPositionOnZoomScreen.x <= 0)
