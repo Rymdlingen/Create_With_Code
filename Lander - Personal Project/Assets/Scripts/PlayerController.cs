@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
 
     // Private variables.
     private Rigidbody playerRigidbody;
+    private AudioSource engineAudio;
     private Camera sceneCameraComponent;
     private Camera zoomCameraComponent;
     // For rotating.
@@ -49,6 +50,8 @@ public class PlayerController : MonoBehaviour
     {
         // Used to move the player.
         playerRigidbody = GetComponent<Rigidbody>();
+
+        engineAudio = GetComponent<AudioSource>();
 
         sceneCameraComponent = GameObject.Find("Scene Camera").GetComponent<Camera>();
 
@@ -87,6 +90,16 @@ public class PlayerController : MonoBehaviour
             // Move player.
             RotatePlayer();
             AcceleratePlayer();
+
+            if (Input.GetButtonDown("Jump") || Input.GetButtonDown("Fire1") || Input.GetButtonDown("Fire2") || Input.GetButtonDown("Fire3"))
+            {
+                engineAudio.mute = false;
+            }
+
+            if (Input.GetButtonUp("Jump") || Input.GetButtonUp("Fire1") || Input.GetButtonUp("Fire2") || Input.GetButtonUp("Fire3"))
+            {
+                engineAudio.mute = true;
+            }
         }
         else
         {
