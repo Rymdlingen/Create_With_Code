@@ -427,6 +427,7 @@ public class GameManager : MonoBehaviour
 
     public void BackToMenu()
     {
+        //SceneManager.UnloadSceneAsync("Lander");
         SceneManager.LoadScene("MainMenu");
     }
 
