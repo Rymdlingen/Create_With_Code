@@ -42,6 +42,8 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem[] landerFire;
     public Sprite[] arrows;
 
+    private float engineMaxVolume = 0.3f;
+
     //Rotate the lander to upright position.
     private float rotationTimeRemaining;
 
@@ -90,21 +92,13 @@ public class PlayerController : MonoBehaviour
             // Move player.
             RotatePlayer();
             AcceleratePlayer();
-
-            if (Input.GetButtonDown("Jump") || Input.GetButtonDown("Fire1") || Input.GetButtonDown("Fire2") || Input.GetButtonDown("Fire3"))
-            {
-                engineAudio.mute = false;
-            }
-
-            if (Input.GetButtonUp("Jump") || Input.GetButtonUp("Fire1") || Input.GetButtonUp("Fire2") || Input.GetButtonUp("Fire3"))
-            {
-                engineAudio.mute = true;
-            }
         }
         else
         {
             // If the game is not active, fuel is not used.
             usingFuel = false;
+
+            engineAudio.volume = FadeOutAudio(engineAudio);
         }
 
         // Calculate and display direction and speed of lander.
@@ -163,11 +157,15 @@ public class PlayerController : MonoBehaviour
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
 
             usingFuel = true;
+
+            engineAudio.volume = FadeInAudio(engineAudio, engineMaxVolume);
         }
         else
         {
             // Not using fuel when space is not pressed.
             usingFuel = false;
+
+            engineAudio.volume = FadeOutAudio(engineAudio);
         }
     }
 
@@ -348,7 +346,8 @@ public class PlayerController : MonoBehaviour
         // Activate the failed landning screen.
         gameManagerScript.FailedLandingScreen(true);
 
-        DestroyLander();
+        StopPlayer();
+
         usingFuel = false;
         gameActive = false;
 
@@ -430,5 +429,25 @@ public class PlayerController : MonoBehaviour
     {
         playerRigidbody.velocity = Vector3.zero;
         playerRigidbody.AddForce(Vector3.up, ForceMode.Impulse);
+    }
+
+    private float FadeInAudio(AudioSource audio, float maxVolume)
+    {
+        if (audio.volume < maxVolume)
+        {
+            audio.volume = Mathf.MoveTowards(audio.volume, maxVolume, 2 * Time.unscaledDeltaTime);
+        }
+
+        return audio.volume;
+    }
+
+    private float FadeOutAudio(AudioSource audio)
+    {
+        if (audio.volume > 0)
+        {
+            audio.volume = Mathf.MoveTowards(audio.volume, 0, Time.unscaledDeltaTime);
+        }
+
+        return audio.volume;
     }
 }

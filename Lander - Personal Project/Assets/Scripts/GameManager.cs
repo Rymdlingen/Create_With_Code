@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         }
 
         // As long as the player has fuel left (and time is not paused) the time is calculated.
-        if (fuelLeft > 0)
+        if (fuelLeft > 0 && playerControllerScript.gameActive)
         {
             CalculateMinutesAndSeconds();
         }
@@ -287,14 +287,12 @@ public class GameManager : MonoBehaviour
         // Pause the time, add a successful landing and activate button.
         if (active)
         {
-            Time.timeScale = 0;
             successfulLandings++;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
         else
         {
             // Start time and deactivate button.
-            Time.timeScale = 1;
             DeactivateButton(buttons);
         }
     }
@@ -317,13 +315,13 @@ public class GameManager : MonoBehaviour
 
             if (active)
             {
-                Time.timeScale = 0;
+                // Time.timeScale = 0;
                 crashes++;
                 StartCoroutine(WaitWithActivatingButton(buttons));
             }
             else
             {
-                Time.timeScale = 1;
+                // Time.timeScale = 1;
                 DeactivateButton(buttons);
             }
         }
@@ -342,14 +340,14 @@ public class GameManager : MonoBehaviour
 
         if (active)
         {
-            Time.timeScale = 0;
+            // Time.timeScale = 0;
             playerControllerScript.usingFuel = false;
             crashes++;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
         else
         {
-            Time.timeScale = 1;
+            // Time.timeScale = 1;
             DeactivateButton(buttons);
         }
 
@@ -388,11 +386,13 @@ public class GameManager : MonoBehaviour
 
         if (active)
         {
+            player.GetComponent<AudioSource>().mute = true;
             Time.timeScale = 0;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
         else
         {
+            player.GetComponent<AudioSource>().mute = false;
             Time.timeScale = 1;
 
             DeactivateButton(buttons);
@@ -427,7 +427,6 @@ public class GameManager : MonoBehaviour
 
     public void BackToMenu()
     {
-        //SceneManager.UnloadSceneAsync("Lander");
         SceneManager.LoadScene("MainMenu");
     }
 
