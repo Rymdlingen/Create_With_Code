@@ -46,6 +46,10 @@ public class GameManager : MonoBehaviour
     public MainMenu mainMenuScript;
     private GameObject player;
     private EventSystem eventSystem;
+    private GameObject lowFuelScreen;
+
+    private float lowFuelScreenTimer = 0;
+    private bool showLowFuelScreen = true;
 
     bool gamePaused = false;
     bool gameOver = false;
@@ -65,11 +69,18 @@ public class GameManager : MonoBehaviour
 
         // Find the event system, used for buttons.
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
+
+        lowFuelScreen = GameObject.Find("Canvas").transform.Find("LowFuel").gameObject;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (GameObject.Find("Canvas").GetComponent<AudioSource>().isPlaying)
+        {
+            Debug.Log("BEEEP");
+        }
+
         // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
         if (Input.GetButtonDown("Cancel") && gamePaused == false)
         {
@@ -116,6 +127,8 @@ public class GameManager : MonoBehaviour
         // When the player is out of fuel, start the end.
         if (fuelLeft < 1)
         {
+            lowFuelScreen.SetActive(false);
+
             // As long as there is a lander, make the it fall and display the out of fuel message.
             if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
             {
@@ -130,6 +143,22 @@ public class GameManager : MonoBehaviour
                 EndScreen(true);
                 gameOver = false;
             }
+        }
+        else if (fuelLeft < 200)
+        {
+            if (lowFuelScreenTimer <= 0)
+            {
+                lowFuelScreen.SetActive(showLowFuelScreen);
+                if (showLowFuelScreen)
+                {
+                    GameObject.Find("Canvas").GetComponent<AudioSource>().Play();
+                }
+
+                showLowFuelScreen = !showLowFuelScreen;
+                lowFuelScreenTimer = 1;
+            }
+
+            lowFuelScreenTimer = Mathf.MoveTowards(lowFuelScreenTimer, 0, Time.deltaTime);
         }
     }
 
@@ -357,7 +386,7 @@ public class GameManager : MonoBehaviour
     private void EndScreen(bool active)
     {
         gameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
-        GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(!active);
+        GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
 
         // Display the text and button.
         GameObject endScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;

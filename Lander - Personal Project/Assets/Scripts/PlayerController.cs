@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     // Private variables.
     private Rigidbody playerRigidbody;
     private AudioSource engineAudio;
+    private AudioSource crashSound;
     private Camera sceneCameraComponent;
     private Camera zoomCameraComponent;
     // For rotating.
@@ -60,6 +61,8 @@ public class PlayerController : MonoBehaviour
         zoomCameraComponent = GameObject.Find("Zoom Camera").GetComponent<Camera>();
 
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
+
+        crashSound = GameObject.Find("Focal Point").GetComponent<AudioSource>();
     }
 
 
@@ -84,6 +87,16 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (crashSound.isPlaying)
+        {
+            Debug.Log("Crash sound");
+        }
+
+        if (engineAudio.volume > 0)
+        {
+            Debug.Log("Engine is making sound");
+        }
+
         // Check if player is on screen.
         CheckPlayerPosition();
 
@@ -343,6 +356,8 @@ public class PlayerController : MonoBehaviour
 
     public void Crash()
     {
+        crashSound.Play();
+
         // Activate the failed landning screen.
         gameManagerScript.FailedLandingScreen(true);
 
