@@ -2524,7 +2524,7 @@ Transform:
   m_GameObject: {fileID: 131201335}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -799, y: 0, z: -1000}
-  m_LocalScale: {x: 314, y: 178, z: 1}
+  m_LocalScale: {x: 318, y: 180, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
@@ -6467,7 +6467,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 45}
+  m_AnchoredPosition: {x: 0, y: 50}
   m_SizeDelta: {x: 492.90015, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &475473452
@@ -7330,13 +7330,13 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 267
+  orthographic size: 270
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 1968862247}
+  m_TargetTexture: {fileID: 1670417954}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -10900,9 +10900,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1979a053010f545d8a938e204d266d71, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 81af8766d531c4149ae549d457bb9cce, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -15483,13 +15483,13 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 89
+  orthographic size: 90
   m_Depth: -2
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 1968862247}
+  m_TargetTexture: {fileID: 1670417954}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -20270,12 +20270,13 @@ MonoBehaviour:
   crashedText: {fileID: 1324018091}
   outerSpaceText: {fileID: 1496558365}
   gameOverText: {fileID: 475473452}
-  fuelLeft: 500
+  fuelLeft: 3000
   newPoints: 0
   playerPrefab: {fileID: 215967283021758821, guid: 90127c34d9d4041528bdd9d82a7d5ecc,
     type: 3}
   playerControllerScript: {fileID: 0}
   mainMenuScript: {fileID: 0}
+  hasCrashed: 0
 --- !u!4 &1465050992
 Transform:
   m_ObjectHideFlags: 0
@@ -22343,9 +22344,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1979a053010f545d8a938e204d266d71, type: 3}
+  m_audioClip: {fileID: 8300000, guid: e4a68e615e7aa460ca87d3ab50256ae7, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -23415,6 +23416,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!84 &1670417954
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 318
+  m_Height: 180
+  m_AntiAliasing: 1
+  m_DepthFormat: 2
+  m_ColorFormat: 7
+  m_MipMap: 0
+  m_GenerateMips: 0
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 0
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
 --- !u!1 &1672732292
 GameObject:
   m_ObjectHideFlags: 0
@@ -25814,7 +25847,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 88.25
+  orthographic size: 89.25
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -27827,38 +27860,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1965669483}
   m_PrefabAsset: {fileID: 0}
---- !u!84 &1968862247
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 314
-  m_Height: 178
-  m_AntiAliasing: 1
-  m_DepthFormat: 2
-  m_ColorFormat: 7
-  m_MipMap: 0
-  m_GenerateMips: 0
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 0
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
 --- !u!1001 &1973396861
 PrefabInstance:
   m_ObjectHideFlags: 0

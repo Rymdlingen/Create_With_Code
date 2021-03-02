@@ -21,12 +21,6 @@ public class ScreenShakeController : MonoBehaviour
         sceneCameraStartPosition = transform.position;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void LateUpdate()
     {
         // Shake the camera.

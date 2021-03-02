@@ -87,16 +87,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (crashSound.isPlaying)
-        {
-            Debug.Log("Crash sound");
-        }
-
-        if (engineAudio.volume > 0)
-        {
-            Debug.Log("Engine is making sound");
-        }
-
         // Check if player is on screen.
         CheckPlayerPosition();
 
@@ -233,6 +223,12 @@ public class PlayerController : MonoBehaviour
                 }
 
                 DestroyLander();
+
+                // Used to show the game over screen when the player crashes after running out of fuel.
+                if (gameManagerScript.fuelLeft < 1)
+                {
+                    gameManagerScript.hasCrashed = true;
+                }
             }
         }
 
@@ -291,7 +287,7 @@ public class PlayerController : MonoBehaviour
                 // Successfull landing, calculates if it was a good landing from the speed (and the rotation). 
                 Landed(verticalSpeed, horizontalSpeed);
 
-                // Pauses the game.
+                // Used to restrict the player.
                 gameActive = false;
             }
         }
@@ -360,6 +356,12 @@ public class PlayerController : MonoBehaviour
 
         // Activate the failed landning screen.
         gameManagerScript.FailedLandingScreen(true);
+
+        // Used to show the game over screen when the player crashes after running out of fuel.
+        if (gameManagerScript.fuelLeft < 1)
+        {
+            gameManagerScript.hasCrashed = true;
+        }
 
         StopPlayer();
 
@@ -446,6 +448,7 @@ public class PlayerController : MonoBehaviour
         playerRigidbody.AddForce(Vector3.up, ForceMode.Impulse);
     }
 
+    // Gradually raises the volume of audio.
     private float FadeInAudio(AudioSource audio, float maxVolume)
     {
         if (audio.volume < maxVolume)
@@ -456,6 +459,7 @@ public class PlayerController : MonoBehaviour
         return audio.volume;
     }
 
+    // Gradually lowers the volume of audio.
     private float FadeOutAudio(AudioSource audio)
     {
         if (audio.volume > 0)

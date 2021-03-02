@@ -19,12 +19,6 @@ public class LanderSprite : MonoBehaviour
         followPlayerScript = transform.GetComponent<FollowPlayer>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void LateUpdate()
     {
         // Get the rotation of the player.

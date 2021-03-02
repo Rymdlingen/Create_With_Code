@@ -17,12 +17,6 @@ public class GivePointsToPlayer : MonoBehaviour
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         // If a platform collides with the player new points are added to the player controller script.

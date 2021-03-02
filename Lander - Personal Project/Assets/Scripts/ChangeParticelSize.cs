@@ -21,14 +21,16 @@ public class ChangeParticelSize : MonoBehaviour
         {
             foreach (ParticleSystem particle in particles)
             {
-                particle.startSize = 1;
+                var main = particle.main;
+                main.startSize = 1;
             }
         }
         else
         {
             foreach (ParticleSystem particle in particles)
             {
-                particle.startSize = 3;
+                var main = particle.main;
+                main.startSize = 3;
             }
         }
     }

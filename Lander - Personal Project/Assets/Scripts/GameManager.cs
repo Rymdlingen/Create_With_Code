@@ -51,8 +51,10 @@ public class GameManager : MonoBehaviour
     private float lowFuelScreenTimer = 0;
     private bool showLowFuelScreen = true;
 
-    bool gamePaused = false;
-    bool gameOver = false;
+    private bool gamePaused = false;
+    private bool gameOver = false;
+
+    public bool hasCrashed = false;
 
     // Counts landings and crashes.
     private int crashes;
@@ -76,11 +78,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find("Canvas").GetComponent<AudioSource>().isPlaying)
-        {
-            Debug.Log("BEEEP");
-        }
-
         // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
         if (Input.GetButtonDown("Cancel") && gamePaused == false)
         {
@@ -113,7 +110,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Fisplay the text for altitde and speed.
-        altitudeText.SetText(Mathf.RoundToInt(playerControllerScript.hit.distance - 8).ToString());
+        altitudeText.SetText(Mathf.Max(Mathf.RoundToInt(playerControllerScript.hit.distance - 8), 0).ToString());
         horizontalSpeedText.SetText(playerControllerScript.horizontalSpeed.ToString());
         verticalSpeedText.SetText(playerControllerScript.verticalSpeed.ToString());
 
@@ -129,8 +126,8 @@ public class GameManager : MonoBehaviour
         {
             lowFuelScreen.SetActive(false);
 
-            // As long as there is a lander, make the it fall and display the out of fuel message.
-            if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
+            // Make the lander fall and display the out of fuel message.
+            if (!hasCrashed)
             {
                 GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(true);
                 MakePlayerFall();
@@ -143,22 +140,36 @@ public class GameManager : MonoBehaviour
                 EndScreen(true);
                 gameOver = false;
             }
-        }
-        else if (fuelLeft < 200)
+        } // When fuel is getting low a warning with text and sound is displayed.
+        else if (fuelLeft < 200 && fuelLeft > 0 && playerControllerScript.gameActive)
         {
+            // Makes the text blink and sound activate every time the text becomes visible.
             if (lowFuelScreenTimer <= 0)
             {
+                // Swithes between visible and not visible text.
                 lowFuelScreen.SetActive(showLowFuelScreen);
+
+                // If text bacomes visible sound playes.
                 if (showLowFuelScreen)
                 {
                     GameObject.Find("Canvas").GetComponent<AudioSource>().Play();
                 }
 
+                // Swithes between visible and no visible text.
                 showLowFuelScreen = !showLowFuelScreen;
+                // Resets the timer.
                 lowFuelScreenTimer = 1;
             }
 
+            // Counts down.
             lowFuelScreenTimer = Mathf.MoveTowards(lowFuelScreenTimer, 0, Time.deltaTime);
+        }
+        else if (!lowFuelScreen || lowFuelScreenTimer > 0)
+        {
+            // Resets the low fuel screen.
+            lowFuelScreen.SetActive(false);
+            lowFuelScreenTimer = 0;
+            showLowFuelScreen = true;
         }
     }
 
@@ -329,8 +340,6 @@ public class GameManager : MonoBehaviour
     // Change text on screen.
     public void FailedLandingScreen(bool active)
     {
-
-
         // Only display this screen if the player has fuel left, if the player has no fuel left the game over screen will be displayed instead.
         if (fuelLeft > 0)
         {
@@ -379,7 +388,6 @@ public class GameManager : MonoBehaviour
             // Time.timeScale = 1;
             DeactivateButton(buttons);
         }
-
     }
 
     // Change text on screen.
@@ -394,6 +402,7 @@ public class GameManager : MonoBehaviour
 
         GameObject[] buttons = new GameObject[] { endScreen.transform.Find("Continue Button").gameObject };
 
+        // Activate button after waiting.
         if (active)
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
@@ -413,6 +422,7 @@ public class GameManager : MonoBehaviour
 
         GameObject[] buttons = new GameObject[] { pauseScreen.transform.Find("Continue Button").gameObject, pauseScreen.transform.Find("Restart Button").gameObject };
 
+        // Activate button after waiting and pause game.
         if (active)
         {
             player.GetComponent<AudioSource>().mute = true;
@@ -429,7 +439,6 @@ public class GameManager : MonoBehaviour
             gamePaused = false;
         }
     }
-
 
     // This happens if a button is pressed that makes the game continue.
     public void ContinueButton()
@@ -449,30 +458,37 @@ public class GameManager : MonoBehaviour
         ResetPlayer();
     }
 
+    // Triggers the out of fuel function from player controller script.
     private void MakePlayerFall()
     {
         playerControllerScript.OutOfFuel();
     }
 
+    // Loads the menu.
     public void BackToMenu()
     {
         SceneManager.LoadScene("MainMenu");
     }
 
+    // Goes throgh and activates all the buttons on a screen.
     IEnumerator WaitWithActivatingButton(GameObject[] buttons)
     {
         yield return new WaitForSecondsRealtime(1);
 
+        // Make all buttons interactable.
         foreach (GameObject button in buttons)
         {
             button.GetComponent<Button>().interactable = true;
         }
 
+        // Sets the first button as selected.
         eventSystem.SetSelectedGameObject(buttons[0]);
     }
 
+    // Deactivates all buttons when a screen is not shown.
     private void DeactivateButton(GameObject[] buttons)
     {
+        // Make all buttons not interactable.
         foreach (GameObject button in buttons)
         {
             button.GetComponent<Button>().interactable = false;

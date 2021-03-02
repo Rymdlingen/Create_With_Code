@@ -1771,11 +1771,19 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Use the left and right arrow keys to rotate the lander \n\nPress and hold
-    space to fire the engines and move the lander in the direction it is rotated\n\nYour
-    goal is to land as many landers as you can before you run out of fuel\n\nIf you
-    hit the ground or land on the platform with to high speed you will crash. Do your
-    best to land as soft as possible to not damage the lander."
+  m_text: 'Your goal is to land the lander on the platforms, smaller platforms and
+    careful landings give the most points.
+
+
+    Use the left and right arrow keys to rotate the lander.
+
+
+    Press and hold space to fire the engines and move the lander in the direction
+    it is rotated.
+
+
+    The game is over when you are out of fuel. There is three spots where extra fuel
+    can be picked up.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 300d5fc400e8640ea9b7f200f8d8de00, type: 2}
   m_sharedMaterial: {fileID: 21006423646881238, guid: 300d5fc400e8640ea9b7f200f8d8de00,
@@ -1846,10 +1854,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: -157.59174, w: 0}
   m_textInfo:
     textComponent: {fileID: 610260069}
-    characterCount: 373
+    characterCount: 361
     spriteCount: 0
-    spaceCount: 80
-    wordCount: 77
+    spaceCount: 71
+    wordCount: 69
     linkCount: 0
     lineCount: 15
     pageCount: 1
