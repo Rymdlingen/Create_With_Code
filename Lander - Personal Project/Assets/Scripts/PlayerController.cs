@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
 
     private float engineMaxVolume = 0.3f;
 
+    private float engineCoolDownStartDuration = 0.3f;
+    private float engineCoolDown;
+
     //Rotate the lander to upright position.
     private float rotationTimeRemaining;
 
@@ -63,6 +66,8 @@ public class PlayerController : MonoBehaviour
         gameManagerScript = GameObject.Find("Game Manager").GetComponent<GameManager>();
 
         crashSound = GameObject.Find("Focal Point").GetComponent<AudioSource>();
+
+        engineCoolDown = engineCoolDownStartDuration;
     }
 
 
@@ -71,7 +76,6 @@ public class PlayerController : MonoBehaviour
         // Calculates the distance between the lander and the ground directly below.
         Altitude();
 
-        // TODO do not work after changing to pausing the time.
         // Rotate the lander to upright position if landed at an angle
         if (rotationTimeRemaining > 0)
         {
@@ -90,22 +94,33 @@ public class PlayerController : MonoBehaviour
         // Check if player is on screen.
         CheckPlayerPosition();
 
-        if (gameActive)
+        // Calculate and display direction and speed of lander.
+        CallculateDirectionAndSpeed();
+
+        if (gameActive && !gameManagerScript.gamePaused)
         {
+            if (engineCoolDown > 0)
+            {
+                engineCoolDown = Mathf.MoveTowards(engineCoolDown, 0, Time.deltaTime);
+                return;
+            }
+
             // Move player.
             RotatePlayer();
             AcceleratePlayer();
         }
         else
         {
+            if (engineCoolDown < engineCoolDownStartDuration)
+            {
+                engineCoolDown = engineCoolDownStartDuration;
+            }
+
             // If the game is not active, fuel is not used.
             usingFuel = false;
 
             engineAudio.volume = FadeOutAudio(engineAudio);
         }
-
-        // Calculate and display direction and speed of lander.
-        CallculateDirectionAndSpeed();
     }
 
     // Rotate player around z axis.
@@ -220,6 +235,7 @@ public class PlayerController : MonoBehaviour
                 if (gameActive)
                 {
                     hasDrifteOutInSpace = true;
+                    gameActive = false;
                 }
 
                 DestroyLander();
@@ -352,6 +368,7 @@ public class PlayerController : MonoBehaviour
 
     public void Crash()
     {
+        crashSound.volume = 0.4f;
         crashSound.Play();
 
         // Activate the failed landning screen.
@@ -381,6 +398,8 @@ public class PlayerController : MonoBehaviour
         // Decide on base points for the landing dependning on the speed and angle of the landing.
         if (verticalSpeed > 15 || horizontalSpeed > 15 || rotatedToMuch)
         {
+            crashSound.volume = 0.08f;
+            crashSound.Play();
             // Hard landing.
             basePoints = 15;
 

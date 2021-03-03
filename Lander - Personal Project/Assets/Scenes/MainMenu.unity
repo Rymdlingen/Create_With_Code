@@ -179,7 +179,7 @@ Canvas:
   m_GameObject: {fileID: 5497531}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 2
   m_Camera: {fileID: 247561684}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -199,8 +199,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5497531}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.11710959, y: 0.11710959, z: 0.11710959}
   m_Children:
   - {fileID: 162358093}
   - {fileID: 971899562}
@@ -211,9 +211,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 1}
+  m_SizeDelta: {x: 1753, y: 986}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &162358092
 GameObject:
   m_ObjectHideFlags: 0
@@ -1124,7 +1124,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -325, y: -48}
+  m_AnchoredPosition: {x: -325, y: 2}
   m_SizeDelta: {x: 725.0176, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &468422103
@@ -1145,8 +1145,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "This games is based on the arcade game \nLunar Lander - Atari, 1979\n\nProgramming,
-    art & sound - Johanna Josefsson\n\nFont - Renew, made by Sam Keddy (samkeddy.com)"
+  m_text: "This games is based on the arcade game \nLunar Lander (Atari, 1979) and
+    the purpose of this project was to learn about game development\n\nProgramming,
+    art & sound - Johanna Josefsson\n\nFont - Renew (Sam Keddy, samkeddy.com)\n\nColor
+    palette - APOLLO (AdamCYounis, found at lospec.com)\n\nThanks to my teacher Matej
+    Jan, \nThe Indie Quest and Spelkollektivet for helping me to learn about making
+    games!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 300d5fc400e8640ea9b7f200f8d8de00, type: 2}
   m_sharedMaterial: {fileID: 21006423646881238, guid: 300d5fc400e8640ea9b7f200f8d8de00,
@@ -1214,15 +1218,15 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -391.69794, w: 0}
+  m_margin: {x: 0, y: 0, z: -369.61526, w: 0}
   m_textInfo:
     textComponent: {fileID: 468422103}
-    characterCount: 160
+    characterCount: 393
     spriteCount: 0
-    spaceCount: 30
-    wordCount: 28
+    spaceCount: 69
+    wordCount: 65
     linkCount: 0
-    lineCount: 6
+    lineCount: 15
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -2998,7 +3002,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1632581063
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3035,7 +3039,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Navigation:
     m_Mode: 4
-    m_SelectOnUp: {fileID: 2095740587}
+    m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
@@ -4393,7 +4397,7 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_SelectOnUp: {fileID: 1082383965}
-    m_SelectOnDown: {fileID: 1632581064}
+    m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1

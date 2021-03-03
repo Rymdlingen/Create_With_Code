@@ -17,6 +17,7 @@ public class ChangeParticelSize : MonoBehaviour
     void Update()
     {
         // Change the size of the particles based on what camera is active.
+        // Sene camera.
         if (sceneCamera.isActiveAndEnabled)
         {
             foreach (ParticleSystem particle in particles)
@@ -24,7 +25,7 @@ public class ChangeParticelSize : MonoBehaviour
                 var main = particle.main;
                 main.startSize = 1;
             }
-        }
+        } // Zoom camera.
         else
         {
             foreach (ParticleSystem particle in particles)

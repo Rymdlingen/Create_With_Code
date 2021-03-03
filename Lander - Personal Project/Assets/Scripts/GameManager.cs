@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     private float lowFuelScreenTimer = 0;
     private bool showLowFuelScreen = true;
 
-    private bool gamePaused = false;
+    public bool gamePaused = false;
     private bool gameOver = false;
 
     public bool hasCrashed = false;
@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviour
     // Counts landings and crashes.
     private int crashes;
     private int successfulLandings;
+
+    private GameObject currentSelectedButton;
 
     // Start is called before the first frame update
     void Start()
@@ -79,7 +81,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
-        if (Input.GetButtonDown("Cancel") && gamePaused == false)
+        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused)
         {
             // Activates the pase screen and sets the pause bool to true.
             PauseScreen(true);
@@ -170,6 +172,22 @@ public class GameManager : MonoBehaviour
             lowFuelScreen.SetActive(false);
             lowFuelScreenTimer = 0;
             showLowFuelScreen = true;
+        }
+
+        // If the mouse is clicked outside of the menu, the last selected button is reselected.
+        if (!playerControllerScript.gameActive || gamePaused)
+        {
+            // Save the currently selected button.
+            if (eventSystem.currentSelectedGameObject != null)
+            {
+                currentSelectedButton = eventSystem.currentSelectedGameObject;
+            }
+
+            // If no button is selected, make the last selected on selected.
+            if (eventSystem.currentSelectedGameObject == null && currentSelectedButton != null)
+            {
+                CatchMouseClicks(currentSelectedButton);
+            }
         }
     }
 
@@ -425,15 +443,14 @@ public class GameManager : MonoBehaviour
         // Activate button after waiting and pause game.
         if (active)
         {
-            player.GetComponent<AudioSource>().mute = true;
+            player.GetComponent<AudioSource>().Pause();
             Time.timeScale = 0;
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
         else
         {
-            player.GetComponent<AudioSource>().mute = false;
+            player.GetComponent<AudioSource>().UnPause();
             Time.timeScale = 1;
-
             DeactivateButton(buttons);
 
             gamePaused = false;
@@ -493,5 +510,11 @@ public class GameManager : MonoBehaviour
         {
             button.GetComponent<Button>().interactable = false;
         }
+    }
+
+    // Set the selected game object.
+    private void CatchMouseClicks(GameObject setSelection)
+    {
+        EventSystem.current.SetSelectedGameObject(setSelection);
     }
 }
