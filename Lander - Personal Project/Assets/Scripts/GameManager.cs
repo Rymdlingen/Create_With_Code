@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     // Amount of fuel the player starts with.
     public int fuelLeft = 3000;
+    private float fuelCalculation;
 
     // Timer variables.
     private int timer;
@@ -75,6 +76,14 @@ public class GameManager : MonoBehaviour
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
         lowFuelScreen = GameObject.Find("Canvas").transform.Find("LowFuel").gameObject;
+
+        fuelCalculation = fuelLeft;
+    }
+
+    private void FixedUpdate()
+    {
+        // Calculate and display how much fuel the player has left.
+        CalculateFuel();
     }
 
     // Update is called once per frame
@@ -100,9 +109,6 @@ public class GameManager : MonoBehaviour
             CalculateMinutesAndSeconds();
         }
         DisplayTime();
-
-        // Calculate and display how much fuel the player has left.
-        CalculateFuel();
 
         // Activate the out in space message if the player has exited the screen.
         if (playerControllerScript.hasDrifteOutInSpace)
@@ -269,8 +275,11 @@ public class GameManager : MonoBehaviour
         // Takes away fuel if space is pressed while game is active.
         if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused && !playerControllerScript.hasDrifteOutInSpace)
         {
-            // Takes away 1 fuel every frame.
-            fuelLeft -= 1;
+
+            // Takes away fuel every fixed frame.
+            fuelCalculation -= 0.5f;
+
+            fuelLeft = Mathf.RoundToInt(fuelCalculation);
         }
 
         // Sets the displayed text to the correct amount of fuel.
