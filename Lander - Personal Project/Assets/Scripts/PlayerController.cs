@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem[] landerFire;
     public Sprite[] arrows;
 
-    private float engineMaxVolume = 0.3f;
+    private float engineMaxVolume = 0.2f;
 
     private float engineCoolDownStartDuration = 0.3f;
     private float engineCoolDown;
@@ -391,14 +391,12 @@ public class PlayerController : MonoBehaviour
 
     public void Landed(float verticalSpeed, float horizontalSpeed)
     {
-        // TODO change so it freezes if good landing and bounces/gets into upright position if hard landning.
-
         bool rotatedToMuch = transform.rotation.eulerAngles.z < 360 - oneRotation + 1 && transform.rotation.eulerAngles.z > oneRotation - 1;
 
         // Decide on base points for the landing dependning on the speed and angle of the landing.
         if (verticalSpeed > 15 || horizontalSpeed > 15 || rotatedToMuch)
         {
-            crashSound.volume = 0.08f;
+            crashSound.volume = 0.09f;
             crashSound.Play();
             // Hard landing.
             basePoints = 15;
@@ -409,14 +407,10 @@ public class PlayerController : MonoBehaviour
                 rotationTimeRemaining = 1;
             }
 
-            // TODO
             playerRigidbody.constraints = RigidbodyConstraints.FreezePositionX;
-            //playerRigidbody.constraints = RigidbodyConstraints.FreezePositionZ;
-            //playerRigidbody.constraints = RigidbodyConstraints.FreezeRotationX;
             playerRigidbody.constraints = RigidbodyConstraints.FreezeRotationY;
 
             BounceLander();
-            //StopPlayer();
 
             // Activate small screen shake on the active camera.
             ScreenShake(0.3f, 0.5f);

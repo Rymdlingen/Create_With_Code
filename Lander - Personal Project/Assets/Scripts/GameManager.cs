@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
-        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused)
+        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive)
         {
             // Activates the pase screen and sets the pause bool to true.
             PauseScreen(true);
@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
             // Counts down.
             lowFuelScreenTimer = Mathf.MoveTowards(lowFuelScreenTimer, 0, Time.deltaTime);
         }
-        else if (!lowFuelScreen || lowFuelScreenTimer > 0)
+        else if (!lowFuelScreen || lowFuelScreenTimer > 0 || !playerControllerScript.gameActive)
         {
             // Resets the low fuel screen.
             lowFuelScreen.SetActive(false);
