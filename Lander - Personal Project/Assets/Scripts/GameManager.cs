@@ -267,7 +267,7 @@ public class GameManager : MonoBehaviour
         // Adds fuel if a powerup is collected.
         if (playerControllerScript.addFuel)
         {
-            fuelLeft += fuelInPowerUp;
+            fuelCalculation += fuelInPowerUp;
             // Resets the bool.
             playerControllerScript.addFuel = false;
         }
@@ -275,12 +275,12 @@ public class GameManager : MonoBehaviour
         // Takes away fuel if space is pressed while game is active.
         if (playerControllerScript.usingFuel && fuelLeft > 0 && !gamePaused && !playerControllerScript.hasDrifteOutInSpace)
         {
-
             // Takes away fuel every fixed frame.
             fuelCalculation -= 0.5f;
-
-            fuelLeft = Mathf.RoundToInt(fuelCalculation);
         }
+
+        // Round the fuel to whole numbers.
+        fuelLeft = Mathf.RoundToInt(fuelCalculation);
 
         // Sets the displayed text to the correct amount of fuel.
         fuelText.SetText(MakeFourCharString(fuelLeft.ToString(), '0'));
