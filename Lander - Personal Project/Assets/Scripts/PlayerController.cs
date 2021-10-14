@@ -271,7 +271,6 @@ public class PlayerController : MonoBehaviour
             if (zoomCameraActiveAndFarRight && playersPositionOnZoomScreen.x >= screenWidthBoundary)
             {
                 playerRigidbody.velocity = new Vector3(0, playerRigidbody.velocity.y, 0);
-
             }
         }
     }

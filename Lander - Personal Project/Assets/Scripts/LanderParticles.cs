@@ -36,7 +36,10 @@ public class LanderParticles : MonoBehaviour
                 // Play all fire particles.
                 foreach (ParticleSystem particle in fireParticles)
                 {
-                    particle.Play();
+                    if (particle.isStopped)
+                    {
+                        particle.Play();
+                    }
                 }
             }
             else
@@ -44,7 +47,10 @@ public class LanderParticles : MonoBehaviour
                 // Stop all fire particles.
                 foreach (ParticleSystem particle in fireParticles)
                 {
-                    particle.Stop();
+                    if (particle.isPlaying)
+                    {
+                        particle.Stop();
+                    }
                 }
             }
         }
