@@ -164,7 +164,6 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.back * rotationAngle);
     }
 
-
     // Accelerate player in its local direction.
     void AcceleratePlayer()
     {
