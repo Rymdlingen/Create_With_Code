@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     private string newPointsString;
     private int score = 0;
 
-    // Power p variables.
+    // Power up variables.
     private int fuelInPowerUp = 500;
 
     public GameObject playerPrefab;
@@ -63,6 +63,9 @@ public class GameManager : MonoBehaviour
 
     private GameObject currentSelectedButton;
 
+    // Arcade mode.
+    private bool arcadeMode = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -78,6 +81,11 @@ public class GameManager : MonoBehaviour
         lowFuelScreen = GameObject.Find("Canvas").transform.Find("LowFuel").gameObject;
 
         fuelCalculation = fuelLeft;
+
+        if (mainMenuScript.arcadeMode)
+        {
+            arcadeMode = true;
+        }
     }
 
     private void FixedUpdate()
@@ -89,8 +97,14 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Pauses the game if the any "Cancel" button is pressed and the game is not already paused.
-        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive)
+
+        if (arcadeMode)
+        {
+
+        }
+
+        // Pauses the game if the any "Cancel" button is pressed and the game is not already paused. Doesn't work in arvade mode.
+        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive && !arcadeMode)
         {
             // Activates the pase screen and sets the pause bool to true.
             PauseScreen(true);
@@ -117,21 +131,23 @@ public class GameManager : MonoBehaviour
             playerControllerScript.hasDrifteOutInSpace = false;
         }
 
-        // Fisplay the text for altitde and speed.
+        // Display the text for altitude and speed.
         altitudeText.SetText(Mathf.Max(Mathf.RoundToInt(playerControllerScript.hit.distance - 8), 0).ToString());
         horizontalSpeedText.SetText(playerControllerScript.horizontalSpeed.ToString());
         verticalSpeedText.SetText(playerControllerScript.verticalSpeed.ToString());
 
-        // Activate the screen for a successfl landing when there is new points gained.
+        // Activate the screen for a successful landing when there is new points gained.
         if (playerControllerScript.basePoints > 0)
         {
             SuccessfulLandingScreen(true);
             playerControllerScript.basePoints = 0;
         }
 
+
         // When the player is out of fuel, start the end.
         if (fuelLeft < 1)
         {
+            // TODO add highscore
             lowFuelScreen.SetActive(false);
 
             // Make the lander fall and display the out of fuel message.
@@ -420,7 +436,43 @@ public class GameManager : MonoBehaviour
     // Change text on screen.
     private void EndScreen(bool active)
     {
+        if (arcadeMode)
+        {
+            ArcadeEndScreen(active);
+        }
+        else
+        {
+            // Set text.
+            gameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
+
+            // Remove out of fuel warning.
+            GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
+
+            // Display the text and button.
+            GameObject endScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
+            endScreen.SetActive(active);
+
+            GameObject[] buttons = new GameObject[] { endScreen.transform.Find("Continue Button").gameObject };
+
+            // Activate button after waiting.
+            if (active)
+            {
+                StartCoroutine(WaitWithActivatingButton(buttons));
+            }
+            else
+            {
+                DeactivateButton(buttons);
+            }
+        }
+    }
+
+    // Change text on screen.
+    private void ArcadeEndScreen(bool active)
+    {
+        // Set text.
         gameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
+
+        // Remove out of fuel warning.
         GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
 
         // Display the text and button.
@@ -431,6 +483,27 @@ public class GameManager : MonoBehaviour
 
         // Activate button after waiting.
         if (active)
+        {
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        else
+        {
+            DeactivateButton(buttons);
+        }
+    }
+
+    // Move to the enter highscore screen.
+    public void SaveHighscoreScreen()
+    {
+        // Display the text and button.
+        GameObject ArcadeEndScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject; // TODO
+
+        // TODO show screen
+
+        GameObject[] buttons = new GameObject[] { transform.Find("Continue Button").gameObject }; // TODO find button, change to 'thisScreen'.transform.Find...
+
+        // Activate button after waiting.
+        if (true) // TODO
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
