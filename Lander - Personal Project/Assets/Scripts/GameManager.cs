@@ -5,6 +5,20 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+public class SaveScore
+{
+    string Name;
+    int Score;
+
+    public SaveScore(string nameString, int scoreInt)
+    {
+        Name = nameString;
+        Score = scoreInt;
+    }
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -21,6 +35,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI outerSpaceText;
 
     [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI arcadeGameOverText;
+
+    [SerializeField] private TextMeshProUGUI highscore1;
+    [SerializeField] private TextMeshProUGUI highscore210;
+    [SerializeField] private TextMeshProUGUI highscore1119;
+    [SerializeField] private TextMeshProUGUI highscore2028;
+
 
     // Amount of fuel the player starts with.
     public int fuelLeft = 3000;
@@ -37,7 +58,7 @@ public class GameManager : MonoBehaviour
     // Score variables.
     public int newPoints;
     private string newPointsString;
-    private int score = 0;
+    public int score = 0;
 
     // Power up variables.
     private int fuelInPowerUp = 500;
@@ -63,8 +84,10 @@ public class GameManager : MonoBehaviour
 
     private GameObject currentSelectedButton;
 
-    // Arcade mode.
     private bool arcadeMode = false;
+
+    // Highscore
+    private List<string> highscores = new List<string> { };
 
     // Start is called before the first frame update
     void Start()
@@ -82,9 +105,21 @@ public class GameManager : MonoBehaviour
 
         fuelCalculation = fuelLeft;
 
-        if (mainMenuScript.arcadeMode)
+        if (MainMenu.arcadeMode)
         {
             arcadeMode = true;
+            if (!Reload.reloaded)
+            {
+                ArcadeStartScreen(true);
+            }
+        }
+
+        if (Reload.reloaded)
+        {
+            // Show start screen
+
+            Reload.reloaded = false;
+            Time.timeScale = 1;
         }
     }
 
@@ -97,18 +132,21 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (arcadeMode)
-        {
-
-        }
-
         // Pauses the game if the any "Cancel" button is pressed and the game is not already paused. Doesn't work in arvade mode.
-        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive && !arcadeMode)
+        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive)
         {
-            // Activates the pase screen and sets the pause bool to true.
-            PauseScreen(true);
-            gamePaused = true;
+            if (arcadeMode)
+            {
+                // Activates the arcade pause screen.
+                ArcadePauseScreen(true);
+                gamePaused = true;
+            }
+            else
+            {
+                // Activates the pause screen and sets the pause bool to true.
+                PauseScreen(true);
+                gamePaused = true;
+            }
         }
 
         // If there is new points gained, call the calclation of score.
@@ -165,7 +203,7 @@ public class GameManager : MonoBehaviour
                 gameOver = false;
             }
         } // When fuel is getting low a warning with text and sound is displayed.
-        else if (fuelLeft < 200 && fuelLeft > 0 && playerControllerScript.gameActive)
+        else if (fuelLeft < 200 && fuelLeft > 0 && playerControllerScript.gameActive && !gamePaused)
         {
             // Makes the text blink and sound activate every time the text becomes visible.
             if (lowFuelScreenTimer <= 0)
@@ -179,7 +217,7 @@ public class GameManager : MonoBehaviour
                     GameObject.Find("Canvas").GetComponent<AudioSource>().Play();
                 }
 
-                // Swithes between visible and no visible text.
+                // Swithes between visible and not visible text.
                 showLowFuelScreen = !showLowFuelScreen;
                 // Resets the timer.
                 lowFuelScreenTimer = 1;
@@ -188,7 +226,7 @@ public class GameManager : MonoBehaviour
             // Counts down.
             lowFuelScreenTimer = Mathf.MoveTowards(lowFuelScreenTimer, 0, Time.deltaTime);
         }
-        else if (!lowFuelScreen || lowFuelScreenTimer > 0 || !playerControllerScript.gameActive)
+        else if (!lowFuelScreen || lowFuelScreenTimer > 0 || !playerControllerScript.gameActive || gamePaused)
         {
             // Resets the low fuel screen.
             lowFuelScreen.SetActive(false);
@@ -470,16 +508,68 @@ public class GameManager : MonoBehaviour
     private void ArcadeEndScreen(bool active)
     {
         // Set text.
-        gameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
+        arcadeGameOverText.SetText("Game Over!\nYou had " + successfulLandings + " successful landings and " + crashes + " failed attempts.\nYou scored " + score + " points.\nYour mission lasted for " + minutes + " minutes and " + seconds + " seconds.");
 
         // Remove out of fuel warning.
         GameObject.Find("Canvas").transform.Find("OutOfFuel").gameObject.SetActive(false);
 
         // Display the text and button.
-        GameObject endScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject;
-        endScreen.SetActive(active);
+        GameObject ArcadeEndScreen = GameObject.Find("Canvas").transform.Find("ArcadeGameOver").gameObject;
+        ArcadeEndScreen.SetActive(active);
 
-        GameObject[] buttons = new GameObject[] { endScreen.transform.Find("Continue Button").gameObject };
+        GameObject[] buttons = new GameObject[] { ArcadeEndScreen.transform.Find("Continue Button").gameObject };
+
+        // Activate button after waiting.
+        if (active)
+        {
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        else
+        {
+            DeactivateButton(buttons);
+        }
+    }
+   
+    // Start menu for arcade mode.
+    private void ArcadeStartScreen(bool active)
+    {
+        if (arcadeMode)
+        {
+            gamePaused = true;
+
+            // Display the text and button.
+            GameObject startScreen = GameObject.Find("Canvas").transform.Find("ArcadeStartScreen").gameObject;
+            startScreen.SetActive(active);
+
+            GameObject[] buttons = new GameObject[] { startScreen.transform.Find("Start Button").gameObject, startScreen.transform.Find("Highscore Button").gameObject };
+
+            // Activate button after waiting.
+            if (active)
+            {
+                Time.timeScale = 0;
+                CalculateFuel();
+                StartCoroutine(WaitWithActivatingButton(buttons));
+            }
+            else
+            {
+                DeactivateButton(buttons);
+
+                gamePaused = false;
+            }
+        }
+    } // TODO add control info menu and fnish highscore menu
+
+    // Move to and use the enter highscore screen. TODO save to file
+    public void SaveHighscoreScreen(bool active)
+    {
+        ArcadeEndScreen(false);
+
+        // Display the text and button.
+        GameObject saveHighscoreScreen = GameObject.Find("Canvas").transform.Find("SaveHighscore").gameObject;
+        saveHighscoreScreen.SetActive(active);
+
+        // TODO add restart button? if player doesnt want to save.
+        GameObject[] buttons = new GameObject[] { saveHighscoreScreen.transform.Find("Background").Find("Save Button").gameObject };
 
         // Activate button after waiting.
         if (active)
@@ -492,18 +582,102 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Move to the enter highscore screen.
-    public void SaveHighscoreScreen()
+    // Save the score to a file.
+    public void Save()
     {
-        // Display the text and button.
-        GameObject ArcadeEndScreen = GameObject.Find("Canvas").transform.Find("GameOver").gameObject; // TODO
+        string destination = @"D:\save.txt";
 
-        // TODO show screen
+        string name = "";
+        foreach (char letter in EnterName.threeLetters)
+        {
+            name += letter;
+        }
 
-        GameObject[] buttons = new GameObject[] { transform.Find("Continue Button").gameObject }; // TODO find button, change to 'thisScreen'.transform.Find...
+        // Read from file.
+        if (File.Exists(destination))
+        {
+            highscores.AddRange(File.ReadAllLines(destination));
+        }
+
+        // Save to file.
+        string newScore = MakeFourCharString(score.ToString(), '0') + " " + name;
+
+        highscores.Add(newScore);
+        highscores.Sort();
+        highscores.Reverse();
+
+        File.WriteAllLines(destination, highscores);
+
+        // Switch screen (change to show highscore screen instead of menu) TODO
+        SaveHighscoreScreen(false); 
+        ArcadeStartScreen(true);
+    }
+
+    // Highscore menu screen
+    public void ShowHighscores(bool active)
+    {
+        // Parse and display data
+        highscores.Clear();
+        highscores.AddRange(File.ReadAllLines(@"D:\save.txt"));
+
+        List<string> score210 = new List<string>();
+        List<string> score1119 = new List<string>();
+        List<string> score2028 = new List<string>();
+
+        for (int score = 1; score <= highscores.Count; score++)
+        {
+            if (score == 1)
+            {
+                // 1st
+                highscore1.text = "1. " + highscores[0];
+            }
+            else if (score >= 2 && score <= 10)
+            {
+                // 2-10
+                score210.Add(score + ". " + highscores[score - 1]);
+            }
+            else if (score >= 11 && score <= 19)
+            {
+                // 11-19
+                score1119.Add(score + ". " + highscores[score - 1]);
+            }
+            else if (score >= 20 && score <= 28)
+            {
+                // 20-28
+                score2028.Add(score + ". " + highscores[score - 1]);
+            }
+            else
+            {
+                score = highscores.Count;
+            }
+        }
+
+        if (score210.Count > 0)
+        {
+            highscore210.text = string.Join("\n", score210);
+        }
+
+        if (score1119.Count > 0)
+        {
+            highscore1119.text = string.Join("\n", score1119);
+        }
+
+        if (score2028.Count > 0)
+        {
+            highscore2028.text = string.Join("\n", score2028);
+        }
+
+        // Hide arcade menu
+        ArcadeStartScreen(false);
+
+        // Display button.
+        GameObject highscoreScreen = GameObject.Find("Canvas").transform.Find("Highscore").gameObject;
+        highscoreScreen.SetActive(active);
+
+        GameObject[] buttons = new GameObject[] { highscoreScreen.transform.Find("Background").Find("Menu Button").gameObject};
 
         // Activate button after waiting.
-        if (true) // TODO
+        if (active)
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
         }
@@ -511,6 +685,16 @@ public class GameManager : MonoBehaviour
         {
             DeactivateButton(buttons);
         }
+    }
+
+    // Control menu screen
+
+    // Back to arcade menu button
+    public void BackToArcadeMenu()
+    {
+        // Hide current screen and show arcade menu
+        ShowHighscores(false);
+        ArcadeStartScreen(true);
     }
 
     // Change text on screen.
@@ -539,6 +723,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Change text on screen.
+    public void ArcadePauseScreen(bool active)
+    {
+        // Display the text and buttons.
+        GameObject pauseScreen = GameObject.Find("Canvas").transform.Find("ArcadePauseScreen").gameObject;
+        pauseScreen.SetActive(active);
+
+        GameObject[] buttons = new GameObject[] { pauseScreen.transform.Find("Continue Button").gameObject, pauseScreen.transform.Find("Restart Button").gameObject };
+
+        // Activate button after waiting and pause game.
+        if (active)
+        {
+            player.GetComponent<AudioSource>().Pause();
+            Time.timeScale = 0;
+            StartCoroutine(WaitWithActivatingButton(buttons));
+        }
+        else
+        {
+            player.GetComponent<AudioSource>().UnPause();
+            Time.timeScale = 1;
+            DeactivateButton(buttons);
+
+            gamePaused = false;
+        }
+    }
+
     // This happens if a button is pressed that makes the game continue.
     public void ContinueButton()
     {
@@ -546,6 +756,7 @@ public class GameManager : MonoBehaviour
         SuccessfulLandingScreen(false);
         FailedLandingScreen(false);
         DriftedOutInSpaceScreen(false);
+        ArcadeStartScreen(false);
 
         // Destroy the lander if it wasn't destroyed for some reason ( successful landing is a reason).
         if (GameObject.FindGameObjectsWithTag("Player").Length > 0)
@@ -567,6 +778,12 @@ public class GameManager : MonoBehaviour
     public void BackToMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    // Relode the whole game (used in arcade mode).
+    public void ReloadGame()
+    {
+        SceneManager.LoadScene("Reload");
     }
 
     // Goes throgh and activates all the buttons on a screen.

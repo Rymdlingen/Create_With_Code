@@ -7,11 +7,12 @@ using UnityEngine.EventSystems;
 
 public class MainMenu : MonoBehaviour
 {
-    public bool arcadeMode = false;
+    public static bool arcadeMode = false;
 
     // Activated by pressing the play button in the main menu.
     public void PlayGame()
     {
+        arcadeMode = false;
         SceneManager.LoadScene("Lander");
     }
 
