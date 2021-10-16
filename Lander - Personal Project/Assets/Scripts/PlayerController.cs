@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
     {
         // If the player hold space, add force in the (local) upward direction of the player object.
         // Use up fuel when space is pressed.
-        if (Input.GetButton("Jump") || Input.GetButton("Fire1") || Input.GetButton("Fire2") || Input.GetButton("Fire3"))
+        if (Input.GetButton("Fire1"))
         {
             playerRigidbody.AddForce(transform.up * force * Time.deltaTime);
 

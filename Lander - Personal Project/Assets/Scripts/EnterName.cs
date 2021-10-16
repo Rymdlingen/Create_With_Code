@@ -16,6 +16,8 @@ public class EnterName : MonoBehaviour
     private TextMeshProUGUI currentLetterTextField;
     private SpriteRenderer upArrow;
     private SpriteRenderer downArrow;
+    [SerializeField] private SpriteRenderer leftArrow;
+    [SerializeField] private SpriteRenderer rightArrow;
 
     [SerializeField] private Color baseColor = new Color();
     [SerializeField] private Color clickedColor = new Color();
@@ -41,14 +43,22 @@ public class EnterName : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // TODO DONT FORGET ABOUT COLDOWN
-        if (canClick) //coldown done
+        if (canClick)
         {
             // Change letter.
-            if (Input.GetAxis("Vertical") != 0)
+            if (Input.GetKey(KeyCode.Joystick1Button2) || Input.GetKey(KeyCode.Joystick1Button3))
             {
 
-                float input = Input.GetAxis("Vertical");
+                float input = 0;
+
+                if (Input.GetKey(KeyCode.Joystick1Button2))
+                {
+                    input = 1;
+                }
+                else if (Input.GetKey(KeyCode.Joystick1Button3))
+                {
+                    input = -1;
+                }
 
                 if (input > 0)
                 {
@@ -135,6 +145,23 @@ public class EnterName : MonoBehaviour
                 upArrow.color = baseColor;
                 downArrow.color = baseColor;
             }
+        }
+
+        if (Input.GetAxis("Horizontal") != 0)
+        {
+            if (Input.GetAxis("Horizontal") > 0)
+            {
+                rightArrow.color = clickedColor;
+            }
+            else if (Input.GetAxis("Horizontal") < 0)
+            {
+                leftArrow.color = clickedColor;
+            }
+        }
+        else
+        {
+            leftArrow.color = baseColor;
+            rightArrow.color = baseColor;
         }
     }
 
