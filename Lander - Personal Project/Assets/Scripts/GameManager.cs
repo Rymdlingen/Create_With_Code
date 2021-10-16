@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI highscore1119;
     [SerializeField] private TextMeshProUGUI highscore2028;
 
-
     // Amount of fuel the player starts with.
     public int fuelLeft = 3000;
     private float fuelCalculation;
@@ -89,6 +88,11 @@ public class GameManager : MonoBehaviour
     // Highscore
     private List<string> highscores = new List<string> { };
 
+    // Both arrows timer
+    bool bothArrowsAllowed = true;
+    float bothArrowsCoolDown = .5f;
+    float bothArrowsTimer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -105,9 +109,14 @@ public class GameManager : MonoBehaviour
 
         fuelCalculation = fuelLeft;
 
+        bothArrowsTimer = bothArrowsCoolDown;
+
+        // Show special start screen for arcade mode.
         if (MainMenu.arcadeMode)
         {
             arcadeMode = true;
+
+            // Only show the start screen when the game is not reloaded (reloading is for starting new game).
             if (!Reload.reloaded)
             {
                 ArcadeStartScreen(true);
@@ -116,8 +125,7 @@ public class GameManager : MonoBehaviour
 
         if (Reload.reloaded)
         {
-            // Show start screen
-
+            // Don't show start screen, instead start the game.
             Reload.reloaded = false;
             Time.timeScale = 1;
         }
@@ -132,8 +140,41 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Pauses the game if the any "Cancel" button is pressed and the game is not already paused. Doesn't work in arvade mode.
-        if ((Input.GetButtonDown("Cancel") || Input.GetKeyDown(KeyCode.P)) && !gamePaused && playerControllerScript.gameActive)
+        if (bothArrowsAllowed && gamePaused && Input.GetKey(KeyCode.Joystick1Button0) && Input.GetKey(KeyCode.Joystick1Button1))
+        {
+            eventSystem.currentSelectedGameObject.GetComponent<Button>().onClick.Invoke();
+            bothArrowsAllowed = false;
+            bothArrowsTimer = bothArrowsCoolDown;
+        }
+        else if (!bothArrowsAllowed)
+        {
+
+            bothArrowsTimer = Mathf.MoveTowards(bothArrowsTimer, -.1f, Time.unscaledDeltaTime);
+
+
+
+            if (bothArrowsTimer < 0)
+            {
+                bothArrowsAllowed = true;
+            }
+
+        }
+
+        if (gamePaused && (Input.GetKey(KeyCode.Joystick1Button2) || Input.GetKey(KeyCode.Joystick1Button3)))
+        {
+            if (Input.GetKey(KeyCode.Joystick1Button2))
+            {
+                eventSystem.SetSelectedGameObject(eventSystem.currentSelectedGameObject.GetComponent<Button>().FindSelectableOnUp()?.GetComponent<Button>().gameObject);
+            }
+
+            if (Input.GetKey(KeyCode.Joystick1Button3))
+            {
+                eventSystem.SetSelectedGameObject(eventSystem.currentSelectedGameObject.GetComponent<Button>().FindSelectableOnDown()?.GetComponent<Button>().gameObject);
+            }
+        }
+
+        // Pauses the game if any "Cancel" button is pressed and the game is not already paused.
+        if (Input.GetKey(KeyCode.Joystick1Button3) && !gamePaused && playerControllerScript.gameActive)
         {
             if (arcadeMode)
             {
@@ -185,7 +226,6 @@ public class GameManager : MonoBehaviour
         // When the player is out of fuel, start the end.
         if (fuelLeft < 1)
         {
-            // TODO add highscore
             lowFuelScreen.SetActive(false);
 
             // Make the lander fall and display the out of fuel message.
@@ -410,11 +450,13 @@ public class GameManager : MonoBehaviour
         {
             successfulLandings++;
             StartCoroutine(WaitWithActivatingButton(buttons));
+            gamePaused = true;
         }
         else
         {
             // Start time and deactivate button.
             DeactivateButton(buttons);
+            gamePaused = false;
         }
     }
 
@@ -437,11 +479,13 @@ public class GameManager : MonoBehaviour
                 // Time.timeScale = 0;
                 crashes++;
                 StartCoroutine(WaitWithActivatingButton(buttons));
+                gamePaused = true;
             }
             else
             {
                 // Time.timeScale = 1;
                 DeactivateButton(buttons);
+                gamePaused = false;
             }
         }
     }
@@ -463,11 +507,13 @@ public class GameManager : MonoBehaviour
             playerControllerScript.usingFuel = false;
             crashes++;
             StartCoroutine(WaitWithActivatingButton(buttons));
+            gamePaused = true;
         }
         else
         {
             // Time.timeScale = 1;
             DeactivateButton(buttons);
+            gamePaused = false;
         }
     }
 
@@ -496,10 +542,12 @@ public class GameManager : MonoBehaviour
             if (active)
             {
                 StartCoroutine(WaitWithActivatingButton(buttons));
+                gamePaused = true;
             }
             else
             {
                 DeactivateButton(buttons);
+                gamePaused = false;
             }
         }
     }
@@ -523,13 +571,15 @@ public class GameManager : MonoBehaviour
         if (active)
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
+            gamePaused = true;
         }
         else
         {
             DeactivateButton(buttons);
+            gamePaused = false;
         }
     }
-   
+
     // Start menu for arcade mode.
     private void ArcadeStartScreen(bool active)
     {
@@ -557,9 +607,9 @@ public class GameManager : MonoBehaviour
                 gamePaused = false;
             }
         }
-    } // TODO add control info menu and fnish highscore menu
+    } // TODO add control info menu
 
-    // Move to and use the enter highscore screen. TODO save to file
+    // Move to and use the enter highscore screen.
     public void SaveHighscoreScreen(bool active)
     {
         ArcadeEndScreen(false);
@@ -575,16 +625,20 @@ public class GameManager : MonoBehaviour
         if (active)
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
+            gamePaused = true;
         }
         else
         {
             DeactivateButton(buttons);
+            gamePaused = false;
         }
     }
 
     // Save the score to a file.
     public void Save()
     {
+        Debug.Log("Save");
+
         string destination = @"D:\save.txt";
 
         string name = "";
@@ -609,7 +663,7 @@ public class GameManager : MonoBehaviour
         File.WriteAllLines(destination, highscores);
 
         // Switch screen (change to show highscore screen instead of menu) TODO
-        SaveHighscoreScreen(false); 
+        SaveHighscoreScreen(false);
         ArcadeStartScreen(true);
     }
 
@@ -674,16 +728,18 @@ public class GameManager : MonoBehaviour
         GameObject highscoreScreen = GameObject.Find("Canvas").transform.Find("Highscore").gameObject;
         highscoreScreen.SetActive(active);
 
-        GameObject[] buttons = new GameObject[] { highscoreScreen.transform.Find("Background").Find("Menu Button").gameObject};
+        GameObject[] buttons = new GameObject[] { highscoreScreen.transform.Find("Background").Find("Menu Button").gameObject };
 
         // Activate button after waiting.
         if (active)
         {
             StartCoroutine(WaitWithActivatingButton(buttons));
+            gamePaused = true;
         }
         else
         {
             DeactivateButton(buttons);
+            gamePaused = false;
         }
     }
 
@@ -694,6 +750,7 @@ public class GameManager : MonoBehaviour
     {
         // Hide current screen and show arcade menu
         ShowHighscores(false);
+        ArcadePauseScreen(false);
         ArcadeStartScreen(true);
     }
 
@@ -709,6 +766,7 @@ public class GameManager : MonoBehaviour
         // Activate button after waiting and pause game.
         if (active)
         {
+            gamePaused = true;
             player.GetComponent<AudioSource>().Pause();
             Time.timeScale = 0;
             StartCoroutine(WaitWithActivatingButton(buttons));
@@ -735,6 +793,7 @@ public class GameManager : MonoBehaviour
         // Activate button after waiting and pause game.
         if (active)
         {
+            gamePaused = true;
             player.GetComponent<AudioSource>().Pause();
             Time.timeScale = 0;
             StartCoroutine(WaitWithActivatingButton(buttons));
@@ -777,7 +836,7 @@ public class GameManager : MonoBehaviour
     // Loads the menu.
     public void BackToMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("Lander");
     }
 
     // Relode the whole game (used in arcade mode).
